@@ -1,0 +1,19 @@
+# Compilación y dependencias
+bin/
+obj/
+out/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# Secretos: nunca subir contraseñas
+appsettings.Production.json
+appsettings.*.local.json
+secrets.json
+
+# Sistema
+Thumbs.db
+.DS_Store
