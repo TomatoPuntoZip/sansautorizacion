@@ -11,7 +11,7 @@
       --azul: #0b4f6c;
       --azul-oscuro: #083b52;
       --azul-claro: #e8f1f6;
-      --verde: #1f8a4c;
+      --verde: #1a7d43;
       --verde-oscuro: #166b3a;
       --fondo: #f6f8fa;
       --texto: #1d2733;
@@ -44,6 +44,7 @@
     .logo { display: block; background: #ffffff; padding: 8px 12px; border-radius: 12px; height: 48px; width: auto; }
     .menu a { color: var(--blanco); font-weight: 700; text-decoration: none; margin-left: 16px; font-size: 1.05rem; }
     .menu a:hover { text-decoration: underline; }
+    .lema { margin: 18px 0 0; font-size: 1.05rem; font-weight: 700; opacity: 0.95; }
     .hero { padding-top: 34px; display: grid; gap: 14px; }
     .hero h1 { font-size: 2.1rem; margin: 0; }
     .hero p { margin: 0; font-size: 1.15rem; max-width: 640px; }
@@ -176,6 +177,7 @@
         <a href="#precios">Precios</a>
       </nav>
     </div>
+    <p class="lema">Gestionamos sus trámites ante la EPS en Neiva</p>
     <div class="hero">
       <h1>Nosotros hacemos su trámite ante la EPS</h1>
       <p>Autorizaciones y reclamaciones de medicamentos, para que usted no tenga que perder días enteros. Atendemos en Neiva, Huila.</p>
@@ -389,7 +391,7 @@
 
 <footer>
   <div class="contenedor">
-    <p><strong>SansAutorization</strong> · Neiva, Huila · WhatsApp: 3202692965</p>
+    <p><strong>SansAutorization</strong> · Gestionamos sus trámites ante la EPS en Neiva, Huila · WhatsApp: 3202692965</p>
     <p>Los datos que comparte se usan solo para gestionar su trámite. <a href="privacidad.html">Cómo tratamos sus datos</a> · <a href="seguimiento.html">Ver mi caso</a></p>
   </div>
 </footer>
@@ -667,7 +669,7 @@
   };
 
   const palabrasClave = [
-    { tema: "precio", palabras: ["precio", "cuanto", "cuesta", "valor", "costo", "tarifa"] },
+    { tema: "precio", palabras: ["precio", "cuanto cuesta", "cuanto vale", "cuesta", "valor", "costo", "tarifa"] },
     { tema: "pago", palabras: ["pago", "pagar", "nequi", "daviplata", "bancolombia", "transferencia", "adelanto"] },
     { tema: "documentos", palabras: ["documento", "documentos", "papel", "requisito", "llevar"] },
     { tema: "como", palabras: ["como funciona", "como trabajan", "proceso", "pasos", "funciona"] },
@@ -735,8 +737,10 @@
 
   function preguntarLibre(texto) {
     const limpio = quitarAcentos(texto);
+    // Busca palabras completas, no fragmentos: "pagar" no debe activarse con "pagaremos"
+    const espacio = " " + limpio.replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim() + " ";
     const encontrado = palabrasClave.find(function (grupo) {
-      return grupo.palabras.some(function (p) { return limpio.indexOf(quitarAcentos(p)) !== -1; });
+      return grupo.palabras.some(function (p) { return espacio.indexOf(" " + quitarAcentos(p) + " ") !== -1; });
     });
     if (encontrado) {
       escribir(respuestas[encontrado.tema], "bot");
