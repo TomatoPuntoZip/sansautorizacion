@@ -27,3 +27,17 @@ Este documento reúne lo que debe confirmar un abogado antes de usar el servicio
 - Cifrado de los archivos adjuntos.
 - Copias de seguridad de la base de datos.
 - Contraseñas nuevas (la de la base y la del panel aparecieron en el chat).
+
+## Frases de la página que hoy no coinciden con el sistema
+- `privacidad.html`: "Solo los ven quienes trabajan en su caso". El panel usa una sola cuenta compartida: quien tenga la contraseña ve todos los casos, y la auditoría registra la IP, no la persona.
+- `privacidad.html`: "La revisamos y la eliminamos" y "pueden borrarlos por WhatsApp". El sistema no tiene borrado automático: solo se purga la auditoría a los 180 días. Si se promete borrar, hay que definir el procedimiento manual (quién lo hace y cómo se deja constancia).
+- `privacidad.html`: no menciona que se registra la dirección IP de cada acceso al panel y cada envío (auditoría), ni que WhatsApp (Meta) recibe el número y el código cuando se escribe a la línea del servicio.
+
+## Decisiones pendientes (no implementadas)
+- **Verificación del WhatsApp:** hoy cualquiera puede registrar una solicitud con el número y el consentimiento de otra persona. Verificar el número cuesta dinero y depende de un proveedor; hay que decidir si se hace.
+- **Topes globales:** los límites son por IP. Varias IP pueden llenar la base de adjuntos. Falta un tope diario global; hay que decidir la cifra.
+- **Fuerza bruta en el seguimiento:** hoy el tope es de 50 consultas por hora por código (puede bloquear el código a un tercero durante una hora). La alternativa es bloquear tras 5 fallos por código, con el riesgo contrario. Hay que decidir.
+- **Cuentas del panel:** conviene una cuenta por persona, para saber quién hizo cada cambio.
+- **Metadatos de las fotos:** el formulario vuelve a dibujar todas las imágenes en el navegador, lo que quita la ubicación y el modelo del teléfono. Falta hacerlo también en el servidor.
+- **Concurrencia:** el cambio de estado se protege si otra persona lo cambió antes (error 409). Los demás campos siguen siendo "gana el último que guarda".
+- **Despliegue:** `AllowedHosts` está en `*`; las tablas se crean al arrancar con el mismo usuario de la aplicación; `Proxy:IpsConfiables` acepta solo IP, no rangos CIDR.
