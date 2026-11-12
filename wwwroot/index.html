@@ -3,317 +3,775 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SansAutorization | Trámites de su EPS</title>
+  <title>SansAutorization | Trámites de su EPS en Neiva</title>
+  <meta name="description" content="Gestionamos autorizaciones y reclamaciones de medicamentos ante su EPS en Neiva, Huila.">
+  <link rel="icon" href="img/logo-icono.svg" type="image/svg+xml">
   <style>
     :root {
       --azul: #0b4f6c;
+      --azul-oscuro: #083b52;
+      --azul-claro: #e8f1f6;
       --verde: #1f8a4c;
       --verde-oscuro: #166b3a;
-      --fondo: #f7f9fb;
+      --fondo: #f6f8fa;
       --texto: #1d2733;
-      --gris: #5b6675;
+      --gris: #4f5968;
       --borde: #d5dde6;
       --blanco: #ffffff;
+      --aviso: #fff8e1;
+      --aviso-borde: #b98a00;
+      --error: #a4001d;
     }
     * { box-sizing: border-box; }
-    html { font-size: 19px; }            /* letra grande por defecto: pensado para personas mayores */
+    html { font-size: 19px; scroll-behavior: smooth; }
     body {
-      margin: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      color: var(--texto);
-      background: var(--fondo);
-      line-height: 1.5;
+      margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--texto); background: var(--fondo); line-height: 1.55;
     }
-    .contenedor { max-width: 760px; margin: 0 auto; padding: 0 16px; }
-    header {
-      background: var(--azul);
-      color: var(--blanco);
-      padding: 28px 0 36px;
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+      outline: 3px solid #0a6fa0; outline-offset: 3px;
     }
-    header h1 { font-size: 2rem; margin: 0 0 8px; }
-    header p { margin: 0 0 18px; font-size: 1.15rem; }
-    h2 { font-size: 1.6rem; color: var(--azul); margin: 0 0 14px; }
-    section { padding: 28px 0; border-bottom: 1px solid var(--borde); }
-    section:last-of-type { border-bottom: none; }
+    .saltar { position: absolute; left: -999px; top: 8px; background: var(--blanco); color: var(--azul); padding: 10px 14px; border-radius: 8px; font-weight: 700; z-index: 50; }
+    .saltar:focus { left: 12px; }
+    .contenedor { max-width: 960px; margin: 0 auto; padding: 0 18px; }
+    h1, h2, h3 { line-height: 1.25; }
+    h2 { font-size: 1.7rem; color: var(--azul); margin: 0 0 6px; }
+    .subtitulo { color: var(--gris); margin: 0 0 22px; }
+
+    /* ----- Encabezado ----- */
+    header.cabecera { background: linear-gradient(135deg, var(--azul) 0%, #0f6b8f 100%); color: var(--blanco); padding: 18px 0 56px; }
+    .barra { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+    .logo { display: block; background: #ffffff; padding: 8px 12px; border-radius: 12px; height: 48px; width: auto; }
+    .menu a { color: var(--blanco); font-weight: 700; text-decoration: none; margin-left: 16px; font-size: 1.05rem; }
+    .menu a:hover { text-decoration: underline; }
+    .hero { padding-top: 34px; display: grid; gap: 14px; }
+    .hero h1 { font-size: 2.1rem; margin: 0; }
+    .hero p { margin: 0; font-size: 1.15rem; max-width: 640px; }
+    .botones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
     .btn {
-      display: inline-block;
-      background: var(--verde);
-      color: var(--blanco);
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 1.15rem;
-      padding: 14px 22px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px; background: var(--verde); color: var(--blanco);
+      text-decoration: none; font: inherit; font-weight: 700; font-size: 1.1rem; padding: 13px 20px;
+      border-radius: 12px; border: 2px solid transparent; cursor: pointer;
     }
-    .btn:hover, .btn:focus { background: var(--verde-oscuro); }
-    .btn-secundario { background: var(--blanco); color: var(--azul); border: 2px solid var(--blanco); }
-    .btn-secundario:hover, .btn-secundario:focus { background: #e6eef4; }
-    ol.pasos { padding-left: 0; list-style: none; counter-reset: paso; }
-    ol.pasos li {
-      counter-increment: paso;
-      background: var(--blanco);
-      border: 1px solid var(--borde);
-      border-radius: 10px;
-      padding: 14px 16px 14px 60px;
-      margin-bottom: 10px;
-      position: relative;
-    }
-    ol.pasos li::before {
-      content: counter(paso);
-      position: absolute;
-      left: 16px; top: 12px;
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: var(--azul);
-      color: var(--blanco);
-      font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .niveles { display: grid; gap: 12px; }
-    .nivel {
-      background: var(--blanco);
-      border: 2px solid var(--borde);
-      border-radius: 12px;
-      padding: 16px;
-    }
-    .nivel .precio { font-size: 1.6rem; font-weight: 800; color: var(--verde-oscuro); }
-    .nivel .nombre { font-weight: 700; font-size: 1.15rem; }
+    .btn:hover { background: var(--verde-oscuro); }
+    .btn-claro { background: var(--blanco); color: var(--azul); }
+    .btn-claro:hover { background: var(--azul-claro); }
+    .btn-secundario { background: var(--blanco); color: var(--azul); border-color: var(--azul); }
+    .btn-secundario:hover { background: var(--azul-claro); }
+
+    /* ----- Tarjetas ----- */
+    .sobre-cabecera { margin-top: -36px; }
+    .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .tarjeta { background: var(--blanco); border: 1px solid var(--borde); border-radius: 14px; padding: 18px; box-shadow: 0 6px 18px rgba(11, 79, 108, 0.08); }
+    .tarjeta .icono { width: 52px; height: 52px; border-radius: 12px; background: var(--azul-claro); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .tarjeta .icono svg { width: 30px; height: 30px; stroke: var(--azul); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .tarjeta h3 { margin: 0 0 6px; font-size: 1.15rem; color: var(--azul); }
+    .tarjeta p { margin: 0; color: var(--gris); font-size: 1rem; }
+
+    section { padding: 40px 0 8px; }
+    .niveles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+    .nivel { background: var(--blanco); border: 2px solid var(--borde); border-radius: 16px; padding: 20px; }
+    .nivel.destacado { border-color: var(--verde); }
+    .nivel .nombre { font-weight: 800; font-size: 1.15rem; }
+    .nivel .precio { font-size: 1.9rem; font-weight: 800; color: var(--verde-oscuro); margin: 4px 0 8px; }
+    .nivel p { margin: 0; color: var(--gris); }
     .nota { color: var(--gris); font-size: 1rem; }
-    .aviso {
-      background: #fff8e1;
-      border: 1px solid #f0d78c;
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 1rem;
+
+    /* ----- Formulario por pasos ----- */
+    .asistente-formulario { background: var(--blanco); border: 1px solid var(--borde); border-radius: 16px; padding: 22px; }
+    .progreso { font-weight: 700; color: var(--azul); margin: 0 0 6px; }
+    .barra-progreso { height: 10px; background: var(--azul-claro); border-radius: 999px; overflow: hidden; margin-bottom: 18px; }
+    .barra-progreso span { display: block; height: 100%; background: var(--verde); width: 25%; transition: width 0.3s; }
+    .paso { display: none; }
+    .paso.activo { display: block; }
+    .paso h3 { font-size: 1.35rem; color: var(--texto); margin: 0 0 14px; }
+    .opciones { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .opcion {
+      text-align: left; background: var(--blanco); color: var(--texto); border: 2px solid var(--borde);
+      border-radius: 14px; padding: 16px; font: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer;
     }
-    form { background: var(--blanco); border: 1px solid var(--borde); border-radius: 12px; padding: 20px; }
-    .campo { margin-bottom: 16px; }
-    label { display: block; font-weight: 700; margin-bottom: 6px; }
+    .opcion small { display: block; font-weight: 400; color: var(--gris); font-size: 0.95rem; margin-top: 4px; }
+    .opcion:hover { border-color: var(--azul); }
+    .opcion[aria-pressed="true"] { border-color: var(--verde); background: #eef8f2; box-shadow: inset 0 0 0 1px var(--verde); }
+    .campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .campo { display: flex; flex-direction: column; }
+    .campo.ancho { grid-column: 1 / -1; }
+    label, .etiqueta { font-weight: 700; margin-bottom: 6px; }
     input[type="text"], input[type="tel"], select, textarea {
-      width: 100%;
-      font: inherit;
-      padding: 12px;
-      border: 2px solid var(--borde);
-      border-radius: 8px;
-      background: var(--blanco);
-      color: var(--texto);
+      width: 100%; font: inherit; padding: 12px; border: 2px solid var(--borde); border-radius: 10px; background: var(--blanco); color: var(--texto);
     }
     textarea { min-height: 96px; resize: vertical; }
-    input:focus, select:focus, textarea:focus { outline: 3px solid #9cc9e0; border-color: var(--azul); }
-    .consentimiento { display: flex; gap: 12px; align-items: flex-start; font-size: 1rem; }
+    .ayuda { margin: 0 0 8px; color: var(--gris); font-size: 0.95rem; }
+    .navegacion { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+    .error { color: var(--error); font-weight: 700; min-height: 1.2em; margin: 12px 0 0; }
+    .resumen { background: var(--fondo); border-radius: 12px; padding: 14px 16px; }
+    .resumen dt { font-weight: 700; color: var(--azul); margin-top: 8px; }
+    .resumen dd { margin: 0 0 4px 0; }
+    .consentimiento { display: flex; gap: 12px; align-items: flex-start; margin-top: 16px; }
     .consentimiento input { width: 24px; height: 24px; margin-top: 4px; flex-shrink: 0; }
-    .error { color: #b00020; font-weight: 700; min-height: 1.2em; margin: 8px 0 0; }
-    details { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; }
-    summary { font-weight: 700; cursor: pointer; font-size: 1.1rem; }
+    .consentimiento label { font-weight: 400; margin: 0; font-size: 1rem; }
+
+    /* ----- Archivos ----- */
+    .etiqueta-archivos { font-weight: 700; margin-bottom: 4px; display: block; }
+    .zona-archivos { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; border: 2px dashed var(--borde); border-radius: 12px; padding: 14px; background: #fafcfd; }
+    .zona-archivos:focus-within { outline: 3px solid #0a6fa0; outline-offset: 2px; }
+    .boton-archivos { background: var(--azul-claro); color: var(--azul); border: 2px solid #b9d3e0; border-radius: 10px; padding: 10px 16px; font-weight: 700; font-size: 1rem; cursor: pointer; }
+    .boton-archivos:hover { background: #d4e6f0; }
+    .input-oculto { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+    .lista-archivos { color: var(--gris); font-size: 0.95rem; word-break: break-word; width: 100%; }
+    .archivo-fila { display: flex; gap: 12px; align-items: flex-start; width: 100%; background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 10px; margin-top: 8px; }
+    .miniatura { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid var(--borde); flex-shrink: 0; }
+    .miniatura-pdf { display: flex; align-items: center; justify-content: center; background: var(--azul-claro); color: var(--azul); font-weight: 800; font-size: 0.85rem; }
+    .archivo-info { min-width: 0; color: var(--texto); }
+    .archivo-info strong { display: block; word-break: break-word; }
+    .archivo-aviso { color: var(--error); font-weight: 700; font-size: 0.9rem; margin-top: 4px; }
+
+    /* ----- Confirmación ----- */
+    .confirmacion { display: none; text-align: center; padding: 10px 0; }
+    .confirmacion.activo { display: block; }
+    .codigo-grande { display: inline-block; font-size: 2rem; font-weight: 800; letter-spacing: 0.08em; color: var(--azul); background: var(--azul-claro); border-radius: 12px; padding: 12px 18px; margin: 10px 0; }
+
+    /* ----- Preguntas frecuentes ----- */
+    details { background: var(--blanco); border: 1px solid var(--borde); border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; }
+    summary { font-weight: 700; cursor: pointer; font-size: 1.1rem; color: var(--azul); }
     details p { margin: 10px 0 0; }
-    footer { padding: 24px 0 40px; color: var(--gris); font-size: 0.95rem; }
-    @media (max-width: 480px) {
+
+    /* ----- Asistente virtual ----- */
+    #abrir-asistente { position: fixed; right: 18px; bottom: 18px; z-index: 20; background: var(--azul); color: var(--blanco); border: none; border-radius: 999px; padding: 14px 20px; font: inherit; font-weight: 700; font-size: 1.05rem; cursor: pointer; box-shadow: 0 8px 22px rgba(11, 79, 108, 0.3); }
+    #asistente { position: fixed; right: 18px; bottom: 18px; z-index: 30; width: min(420px, calc(100vw - 36px)); height: min(640px, calc(100vh - 110px)); font-size: 17px; background: var(--blanco); border-radius: 16px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25); display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--borde); }
+    #asistente.abierto { display: flex; }
+    #asistente header { background: var(--azul); color: var(--blanco); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
+    #asistente header button { background: transparent; border: 2px solid var(--blanco); color: var(--blanco); border-radius: 8px; padding: 4px 10px; font: inherit; cursor: pointer; }
+    #mensajes { flex: 1 1 auto; min-height: 160px; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--fondo); }
+    .burbuja { max-width: 88%; padding: 10px 14px; border-radius: 14px; font-size: 1rem; white-space: pre-line; }
+    .burbuja.bot { background: var(--blanco); border: 1px solid var(--borde); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .burbuja.yo { background: var(--azul); color: var(--blanco); align-self: flex-end; border-bottom-right-radius: 4px; }
+    #opciones { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px; max-height: 132px; overflow-y: auto; flex-shrink: 0; border-top: 1px solid var(--borde); background: var(--blanco); }
+    #opciones button { background: var(--azul-claro); color: var(--azul); border: 1px solid #b9d3e0; border-radius: 999px; padding: 6px 10px; font: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    #opciones button:hover { background: #d4e6f0; }
+    #entrada { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--borde); background: var(--blanco); }
+    #entrada input { flex: 1; font: inherit; padding: 10px; border: 2px solid var(--borde); border-radius: 10px; }
+    #entrada button { background: var(--verde); color: var(--blanco); border: none; border-radius: 10px; padding: 10px 14px; font: inherit; font-weight: 700; cursor: pointer; }
+
+    footer { margin-top: 40px; padding: 26px 0 40px; background: var(--blanco); border-top: 1px solid var(--borde); color: var(--gris); font-size: 0.95rem; }
+    footer a { color: var(--azul); font-weight: 700; }
+
+    @media (max-width: 600px) {
       html { font-size: 17px; }
-      header h1 { font-size: 1.7rem; }
+      .hero h1 { font-size: 1.7rem; }
+      .menu a { margin-left: 10px; font-size: 0.95rem; }
     }
   </style>
 </head>
 <body>
 
-<header>
+<a class="saltar" href="#principal">Ir al contenido</a>
+
+<header class="cabecera">
   <div class="contenedor">
-    <h1>SansAutorization</h1>
-    <p>Nosotros hacemos su trámite ante la EPS, para que usted no tenga que perder días enteros.</p>
-    <a class="btn" href="#solicitar">Solicitar mi trámite</a>
+    <div class="barra">
+      <img class="logo" src="img/logo.svg" alt="SansAutorization" width="220" height="32">
+      <nav class="menu" aria-label="Principal">
+        <a href="seguimiento.html">Ver mi caso</a>
+        <a href="#precios">Precios</a>
+      </nav>
+    </div>
+    <div class="hero">
+      <h1>Nosotros hacemos su trámite ante la EPS</h1>
+      <p>Autorizaciones y reclamaciones de medicamentos, para que usted no tenga que perder días enteros. Atendemos en Neiva, Huila.</p>
+      <div class="botones">
+        <a class="btn" href="#solicitar">Solicitar mi trámite</a>
+        <a class="btn btn-claro" href="#precios">Ver precios</a>
+      </div>
+    </div>
   </div>
 </header>
 
-<main class="contenedor">
-
-  <section>
-    <h2>¿Qué hacemos?</h2>
-    <p>Gestionamos <strong>autorizaciones</strong> y <strong>reclamaciones de medicamentos</strong> ante su EPS. Si el trámite se complica, también escribimos la <strong>PQR</strong> por usted.</p>
-    <p class="nota">Atendemos principalmente en Neiva y municipios cercanos del Huila, por WhatsApp.</p>
-  </section>
-
-  <section>
-    <h2>¿Cómo funciona?</h2>
-    <ol class="pasos">
-      <li>Usted nos escribe por WhatsApp o llena el formulario de abajo.</li>
-      <li>Le decimos cuál es el nivel de su trámite y el precio.</li>
-      <li>Usted paga el 50% para empezar.</li>
-      <li>Nosotros radicamos y hacemos el seguimiento. Le avisamos en cada paso.</li>
-      <li>Al final, usted paga el resto.</li>
-    </ol>
-  </section>
-
-  <section>
-    <h2>Precios</h2>
-    <div class="niveles">
-      <div class="nivel">
-        <div class="nombre">Simple</div>
-        <div class="precio">$20.000</div>
-        <div>Un solo paso ante la EPS, sin rechazo previo.</div>
-      </div>
-      <div class="nivel">
-        <div class="nombre">Medio</div>
-        <div class="precio">$40.000</div>
-        <div>Hay que volver a radicar, corregir documentos o hacer seguimiento de varios días.</div>
-      </div>
-      <div class="nivel">
-        <div class="nombre">Complejo</div>
-        <div class="precio">$70.000</div>
-        <div>Hubo rechazo, hay que escribir una PQR o escalar el caso.</div>
-      </div>
+<main id="principal">
+  <div class="contenedor sobre-cabecera">
+    <div class="tarjetas">
+      <article class="tarjeta">
+        <div class="icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <h3>Autorizaciones</h3>
+        <p>Pedimos la autorización de su medicamento o procedimiento ante la EPS.</p>
+      </article>
+      <article class="tarjeta">
+        <div class="icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        </div>
+        <h3>Reclamaciones</h3>
+        <p>Si su medicamento no le fue entregado, reclamamos por usted.</p>
+      </article>
+      <article class="tarjeta">
+        <div class="icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5z"/></svg>
+        </div>
+        <h3>PQR</h3>
+        <p>Si el caso se complica, escribimos la petición, queja o reclamo.</p>
+      </article>
     </div>
-    <p class="nota">El nivel lo definimos al recibir su solicitud, y se lo confirmamos antes de cobrar.</p>
-  </section>
+  </div>
 
-  <section>
-    <h2>Formas de pago</h2>
-    <p>Para empezar se paga el <strong>50%</strong>. El resto se paga al final. Puede pagar por:</p>
-    <ul>
-      <li>Nequi: <strong>3202692965</strong></li>
-      <li>Daviplata: <strong>3202692965</strong></li>
-      <li>Bancolombia: <strong>3202692965 (llave Bancolombia)</strong></li>
-    </ul>
-    <div class="aviso">
-      <strong>Política de devolución:</strong> si la EPS rechaza la solicitud por causas que no dependen de nosotros, el adelanto no se devuelve. Si no alcanzamos a radicar el trámite, se devuelve completo.
-    </div>
-  </section>
+  <div class="contenedor">
+    <section id="precios" aria-labelledby="titulo-precios">
+      <h2 id="titulo-precios">Precios</h2>
+      <p class="subtitulo">El nivel lo definimos al recibir su solicitud, y se lo confirmamos antes de cobrar.</p>
+      <div class="niveles">
+        <div class="nivel">
+          <div class="nombre">Simple</div>
+          <div class="precio">$20.000</div>
+          <p>Un solo paso ante la EPS, sin rechazo previo.</p>
+        </div>
+        <div class="nivel destacado">
+          <div class="nombre">Medio</div>
+          <div class="precio">$40.000</div>
+          <p>Hay que volver a radicar, corregir documentos o hacer seguimiento de varios días.</p>
+        </div>
+        <div class="nivel">
+          <div class="nombre">Complejo</div>
+          <div class="precio">$70.000</div>
+          <p>Hubo rechazo, hay que escribir una PQR o escalar el caso.</p>
+        </div>
+      </div>
+      <p class="nota">Para empezar se paga la mitad del valor y el resto al final. Si quiere saber cómo se cobra, pregúntele al asistente o escríbanos por WhatsApp.</p>
+    </section>
 
-  <section id="solicitar">
-    <h2>Solicitar mi trámite</h2>
-    <p class="nota">Llene el formulario y se abrirá WhatsApp con su solicitud lista para enviar. No guardamos sus datos en esta página.</p>
+    <section id="solicitar" aria-labelledby="titulo-solicitud">
+      <h2 id="titulo-solicitud">Solicitar mi trámite</h2>
+      <p class="subtitulo">Son cuatro pasos. Puede volver atrás en cualquier momento.</p>
 
-    <form id="formulario" novalidate>
-      <div class="campo">
-        <label for="nombre">Su nombre</label>
-        <input type="text" id="nombre" autocomplete="name" required>
-      </div>
-      <div class="campo">
-        <label for="telefono">Su número de WhatsApp</label>
-        <input type="tel" id="telefono" autocomplete="tel" placeholder="Ej: 3001234567" required>
-      </div>
-      <div class="campo">
-        <label for="municipio">Municipio donde vive</label>
-        <input type="text" id="municipio" required>
-      </div>
-      <div class="campo">
-        <label for="eps">Su EPS</label>
-        <input type="text" id="eps" placeholder="Ej: Nueva EPS" required>
-      </div>
-      <div class="campo">
-        <label for="tramite">¿Qué necesita?</label>
-        <select id="tramite" required>
-          <option value="">Seleccione una opción</option>
-          <option value="Autorización de medicamento">Autorización de medicamento</option>
-          <option value="Reclamación de medicamento">Reclamación de medicamento</option>
-          <option value="PQR">Escribir una PQR</option>
-          <option value="Otro">Otro trámite</option>
-        </select>
-      </div>
-      <div class="campo">
-        <label for="detalle">Nombre del medicamento o procedimiento (opcional)</label>
-        <textarea id="detalle" placeholder="Ej: Losartán 50 mg, o lo que le dijo el médico"></textarea>
-      </div>
-      <div class="campo consentimiento">
-        <input type="checkbox" id="consentimiento">
-        <label for="consentimiento" style="font-weight:400;margin:0">
-          Acepto que SansAutorization use mis datos, incluidos los de salud que comparta, únicamente para gestionar mi trámite ante la EPS. Puedo pedir que los eliminen escribiendo por WhatsApp.
-        </label>
-      </div>
-      <p class="error" id="error" role="alert"></p>
-      <button class="btn" type="submit">Enviar por WhatsApp</button>
-    </form>
-  </section>
+      <form id="formulario" class="asistente-formulario" novalidate>
+        <p class="progreso" id="progreso" aria-live="polite">Paso 1 de 4</p>
+        <div class="barra-progreso" aria-hidden="true"><span id="barra"></span></div>
 
-  <section>
-    <h2>Preguntas frecuentes</h2>
-    <details>
-      <summary>¿Me garantizan que la EPS aprueba el trámite?</summary>
-      <p>No. Lo que garantizamos es que el trámite se haga bien y a tiempo. La decisión final la toma la EPS.</p>
-    </details>
-    <details>
-      <summary>¿Cuánto tarda?</summary>
-      <p>Depende de cada caso y de la respuesta de la EPS. Le avisamos en cada paso.</p>
-    </details>
-    <details>
-      <summary>¿Qué documentos necesito?</summary>
-      <p>Su documento de identidad, el carné o certificado de afiliación, la fórmula médica vigente y, si existe, el mensaje o la negativa de la EPS.</p>
-    </details>
-    <details>
-      <summary>¿Por qué pagar el 50% primero?</summary>
-      <p>Así empezamos el trámite con un compromiso de las dos partes, y usted paga el resto solo cuando el caso avanza o queda resuelto.</p>
-    </details>
-  </section>
+        <!-- Paso 1: qué necesita -->
+        <div class="paso activo" data-paso="1">
+          <h3>1. ¿Qué necesita?</h3>
+          <div class="opciones" role="group" aria-label="Tipo de trámite">
+            <button type="button" class="opcion" data-tramite="Autorización de medicamento" aria-pressed="false">Autorización de medicamento<small>La EPS debe aprobar su medicamento.</small></button>
+            <button type="button" class="opcion" data-tramite="Reclamación de medicamento" aria-pressed="false">Reclamación de medicamento<small>Le dijeron que no había o no se lo entregaron.</small></button>
+            <button type="button" class="opcion" data-tramite="PQR" aria-pressed="false">Escribir una PQR<small>Petición, queja o reclamo ante la EPS.</small></button>
+            <button type="button" class="opcion" data-tramite="Otro trámite" aria-pressed="false">Otro trámite<small>Cuéntenos qué necesita.</small></button>
+          </div>
+        </div>
 
+        <!-- Paso 2: preguntas según la respuesta -->
+        <div class="paso" data-paso="2">
+          <h3 id="titulo-paso-2">2. Cuéntenos un poco más</h3>
+          <div class="campos">
+            <div class="campo ancho" id="bloque-medicamento">
+              <label for="medicamento">Nombre del medicamento o procedimiento</label>
+              <input type="text" id="medicamento" placeholder="Ej: Losartán 50 mg, o lo que le dijo el médico">
+            </div>
+            <div class="campo ancho" id="bloque-respuesta">
+              <span class="etiqueta">¿Qué le ha respondido la EPS?</span>
+              <div class="opciones" role="group" aria-label="Respuesta de la EPS" id="opciones-respuesta">
+                <button type="button" class="opcion" data-respuesta="Todavía no la han pedido" aria-pressed="false">Todavía no la han pedido</button>
+                <button type="button" class="opcion" data-respuesta="Me pidieron documentos" aria-pressed="false">Me pidieron documentos</button>
+                <button type="button" class="opcion" data-respuesta="Me la negaron" aria-pressed="false">Me la negaron</button>
+                <button type="button" class="opcion" data-respuesta="No lo sé" aria-pressed="false">No lo sé</button>
+              </div>
+            </div>
+            <div class="campo ancho" id="bloque-reclamo">
+              <span class="etiqueta">¿Qué pasó con el medicamento?</span>
+              <div class="opciones" role="group" aria-label="Motivo de la reclamación" id="opciones-reclamo">
+                <button type="button" class="opcion" data-respuesta="No me lo entregaron en la farmacia" aria-pressed="false">No me lo entregaron en la farmacia</button>
+                <button type="button" class="opcion" data-respuesta="Me dijeron que no hay en stock" aria-pressed="false">Me dijeron que no hay en stock</button>
+                <button type="button" class="opcion" data-respuesta="Me dijeron que no está autorizado" aria-pressed="false">Me dijeron que no está autorizado</button>
+                <button type="button" class="opcion" data-respuesta="Otra situación" aria-pressed="false">Otra situación</button>
+              </div>
+            </div>
+            <div class="campo ancho" id="bloque-texto">
+              <label for="detalle" id="etiqueta-detalle">Cuéntenos qué necesita</label>
+              <textarea id="detalle" placeholder="Escriba con sus palabras. No necesita escribir nada técnico."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 3: datos y archivos -->
+        <div class="paso" data-paso="3">
+          <h3>3. Sus datos</h3>
+          <div class="campos">
+            <div class="campo">
+              <label for="nombre">Su nombre</label>
+              <input type="text" id="nombre" autocomplete="name">
+            </div>
+            <div class="campo">
+              <label for="telefono">Su número de WhatsApp</label>
+              <input type="tel" id="telefono" autocomplete="tel" placeholder="Ej: 3001234567">
+            </div>
+            <div class="campo">
+              <label for="municipio">Municipio donde vive</label>
+              <input type="text" id="municipio" value="Neiva">
+              <p class="ayuda">Por ahora atendemos en Neiva y alrededores.</p>
+            </div>
+            <div class="campo">
+              <label for="eps">Su EPS</label>
+              <input type="text" id="eps" list="lista-eps" placeholder="Escriba o elija la suya">
+              <datalist id="lista-eps">
+                <option value="Nueva EPS"></option>
+                <option value="Sanitas"></option>
+                <option value="Sura"></option>
+                <option value="Compensar"></option>
+                <option value="Famisanar"></option>
+                <option value="Coosalud"></option>
+                <option value="Emssanar"></option>
+                <option value="Salud Total"></option>
+              </datalist>
+            </div>
+            <div class="campo ancho">
+              <span class="etiqueta-archivos">Fotos o PDF de la fórmula, la autorización o la negativa de la EPS</span>
+              <p class="ayuda">Opcional. Hasta 3 archivos de 5 MB cada uno (JPG, PNG o PDF).</p>
+              <div class="zona-archivos">
+                <label for="adjuntos" class="boton-archivos">Elegir archivos</label>
+                <input type="file" id="adjuntos" class="input-oculto" accept="image/jpeg,image/png,application/pdf" multiple>
+                <div id="adjuntos-lista" class="lista-archivos" aria-live="polite">Ningún archivo seleccionado</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 4: revisar y enviar -->
+        <div class="paso" data-paso="4">
+          <h3>4. Revise y envíe</h3>
+          <dl class="resumen" id="resumen"></dl>
+          <div class="consentimiento">
+            <input type="checkbox" id="consentimiento">
+            <label for="consentimiento">
+              Acepto que SansAutorization use mis datos, incluidos los de salud y los archivos que adjunte, únicamente para gestionar mi trámite ante la EPS. Puedo pedir que los eliminen escribiendo por WhatsApp. <a href="privacidad.html">Leer cómo tratamos sus datos</a>.
+            </label>
+          </div>
+        </div>
+
+        <p class="error" id="error" role="alert"></p>
+
+        <div class="navegacion" id="navegacion">
+          <button type="button" class="btn btn-secundario" id="atras">Atrás</button>
+          <button type="button" class="btn" id="siguiente">Siguiente</button>
+        </div>
+
+        <!-- Confirmación -->
+        <div class="confirmacion" id="confirmacion" role="status" aria-live="polite">
+          <h3>¡Recibimos su solicitud!</h3>
+          <p>Guarde este código. Con el código y los últimos 4 números de su WhatsApp puede ver el avance de su trámite.</p>
+          <div class="codigo-grande" id="codigo-mostrado"></div>
+          <div class="botones" style="justify-content:center">
+            <a class="btn" id="enlace-whatsapp" href="#" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
+            <a class="btn btn-secundario" href="seguimiento.html">Ver el avance de mi trámite</a>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section aria-labelledby="titulo-faq">
+      <h2 id="titulo-faq">Preguntas frecuentes</h2>
+      <details>
+        <summary>¿Me garantizan que la EPS aprueba el trámite?</summary>
+        <p>No. Lo que garantizamos es que el trámite se haga bien y a tiempo. La decisión final la toma la EPS.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto tarda?</summary>
+        <p>Depende de cada caso y de la respuesta de la EPS. Le avisamos en cada paso y puede ver el avance con su código.</p>
+      </details>
+      <details>
+        <summary>¿Qué documentos necesito?</summary>
+        <p>Su documento de identidad, el carné o certificado de afiliación, la fórmula médica vigente y, si existe, el mensaje o la negativa de la EPS.</p>
+      </details>
+      <details>
+        <summary>¿Cómo se paga?</summary>
+        <p>Para empezar se paga la mitad del valor. El resto se paga cuando el caso avanza o queda resuelto. Puede pagar por Nequi, Daviplata o Bancolombia al número 3202692965.</p>
+      </details>
+    </section>
+  </div>
 </main>
 
 <footer>
   <div class="contenedor">
-    <p>SansAutorization · Neiva, Huila · Contacto: <strong>3202692965</strong></p>
-    <p>Los datos que comparte se usan solo para gestionar su trámite. No vendemos ni compartimos su información con terceros, salvo con la EPS para resolver su caso.</p>
+    <p><strong>SansAutorization</strong> · Neiva, Huila · WhatsApp: 3202692965</p>
+    <p>Los datos que comparte se usan solo para gestionar su trámite. <a href="privacidad.html">Cómo tratamos sus datos</a> · <a href="seguimiento.html">Ver mi caso</a></p>
   </div>
 </footer>
 
+<!-- Asistente virtual sin inteligencia artificial: responde con textos predefinidos -->
+<button id="abrir-asistente" type="button" aria-controls="asistente" aria-expanded="false">Asistente</button>
+<div id="asistente" role="dialog" aria-label="Asistente virtual de SansAutorization">
+  <header>
+    <span>Asistente SansAutorization</span>
+    <button type="button" id="cerrar-asistente" aria-label="Cerrar asistente">Cerrar</button>
+  </header>
+  <div id="mensajes" aria-live="polite"></div>
+  <div id="opciones"></div>
+  <form id="entrada">
+    <input type="text" id="pregunta" placeholder="Escriba su pregunta" aria-label="Escriba su pregunta">
+    <button type="submit">Enviar</button>
+  </form>
+</div>
+
 <script>
   // ===== CONFIGURACIÓN =====
-  // Reemplace por el número de WhatsApp del servicio, con código de país (Colombia = 57).
-  // Ejemplo: "573001234567"
   const NUMERO_WHATSAPP = "573202692965";
+  const LIMITE_ARCHIVO = 5 * 1024 * 1024;
+  const TIPOS_ARCHIVO = ["image/jpeg", "image/png", "application/pdf"];
 
-  const formulario = document.getElementById("formulario");
-  const error = document.getElementById("error");
+  // ===== PASOS DEL FORMULARIO =====
+  const pasos = Array.from(document.querySelectorAll("#formulario .paso"));
+  const progreso = document.getElementById("progreso");
+  const barra = document.getElementById("barra");
+  const errorTexto = document.getElementById("error");
+  const atras = document.getElementById("atras");
+  const siguiente = document.getElementById("siguiente");
+  const navegacion = document.getElementById("navegacion");
+  let pasoActual = 1;
+  let tramiteElegido = "";
+  let respuestaElegida = "";
 
-  formulario.addEventListener("submit", function (evento) {
-    evento.preventDefault();
-    error.textContent = "";
+  function mostrarPaso(n) {
+    pasoActual = n;
+    pasos.forEach(function (p) { p.classList.toggle("activo", Number(p.dataset.paso) === n); });
+    progreso.textContent = "Paso " + n + " de 4";
+    barra.style.width = (n * 25) + "%";
+    atras.style.visibility = n === 1 ? "hidden" : "visible";
+    siguiente.textContent = n === 4 ? "Enviar solicitud" : "Siguiente";
+    errorTexto.textContent = "";
+    actualizarPaso2();
+    if (n === 4) mostrarResumen();
+    document.querySelector("#solicitar").scrollIntoView({ block: "start" });
+    const titulo = document.querySelector('.paso[data-paso="' + n + '"] h3');
+    if (titulo) titulo.setAttribute("tabindex", "-1"), titulo.focus({ preventScroll: true });
+  }
+
+  function marcarUnico(grupo, boton) {
+    grupo.querySelectorAll(".opcion").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+    boton.setAttribute("aria-pressed", "true");
+  }
+
+  // Elegir qué necesita
+  document.querySelectorAll('.opcion[data-tramite]').forEach(function (b) {
+    b.addEventListener("click", function () {
+      tramiteElegido = b.dataset.tramite;
+      marcarUnico(b.parentElement, b);
+      respuestaElegida = "";
+      document.querySelectorAll("#opciones-respuesta .opcion, #opciones-reclamo .opcion").forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+    });
+  });
+
+  // Responder según el trámite
+  document.querySelectorAll("#opciones-respuesta .opcion, #opciones-reclamo .opcion").forEach(function (b) {
+    b.addEventListener("click", function () {
+      respuestaElegida = b.dataset.respuesta;
+      marcarUnico(b.parentElement, b);
+    });
+  });
+
+  // Muestra solo las preguntas que corresponden al trámite elegido
+  function actualizarPaso2() {
+    const esAutorizacion = tramiteElegido === "Autorización de medicamento";
+    const esReclamo = tramiteElegido === "Reclamación de medicamento";
+    document.getElementById("bloque-medicamento").style.display = (esAutorizacion || esReclamo) ? "" : "none";
+    document.getElementById("bloque-respuesta").style.display = esAutorizacion ? "" : "none";
+    document.getElementById("bloque-reclamo").style.display = esReclamo ? "" : "none";
+    document.getElementById("titulo-paso-2").textContent = "2. Cuéntenos un poco más";
+    const etiqueta = document.getElementById("etiqueta-detalle");
+    if (tramiteElegido === "PQR") etiqueta.textContent = "Cuéntenos qué pasó y qué quiere que la EPS haga";
+    else if (tramiteElegido === "Otro trámite") etiqueta.textContent = "Cuéntenos qué necesita";
+    else etiqueta.textContent = "Algo más que deba saber (opcional)";
+  }
+
+  function validarPaso(n) {
+    if (n === 1 && !tramiteElegido) return "Elija qué necesita para continuar.";
+    if (n === 2) {
+      const esAutorizacion = tramiteElegido === "Autorización de medicamento";
+      const esReclamo = tramiteElegido === "Reclamación de medicamento";
+      if ((esAutorizacion || esReclamo) && !document.getElementById("medicamento").value.trim())
+        return "Escriba el nombre del medicamento o del procedimiento.";
+      if (esAutorizacion && !respuestaElegida) return "Elija lo que le ha respondido la EPS.";
+      if (esReclamo && !respuestaElegida) return "Elija qué pasó con el medicamento.";
+      if (tramiteElegido === "PQR" && !document.getElementById("detalle").value.trim())
+        return "Cuéntenos qué pasó para poder escribir la PQR.";
+      if (tramiteElegido === "Otro trámite" && !document.getElementById("detalle").value.trim())
+        return "Cuéntenos qué necesita.";
+    }
+    if (n === 3) {
+      if (!document.getElementById("nombre").value.trim()) return "Escriba su nombre.";
+      if (document.getElementById("telefono").value.replace(/\D/g, "").length !== 10) return "Escriba un WhatsApp de 10 dígitos.";
+      if (!document.getElementById("municipio").value.trim()) return "Escriba el municipio.";
+      if (!document.getElementById("eps").value.trim()) return "Escriba su EPS.";
+      const archivos = Array.from(document.getElementById("adjuntos").files || []);
+      if (archivos.length > 3) return "Puede adjuntar hasta 3 archivos.";
+      if (archivos.some(function (f) { return f.size > LIMITE_ARCHIVO || TIPOS_ARCHIVO.indexOf(f.type) === -1; }))
+        return "Revise los archivos: solo JPG, PNG o PDF, y de máximo 5 MB.";
+    }
+    if (n === 4 && !document.getElementById("consentimiento").checked)
+      return "Para enviar necesitamos su autorización en el recuadro de datos.";
+    return "";
+  }
+
+  // Texto que se guarda como detalle: une el trámite con las respuestas
+  function construirDetalle() {
+    const partes = [];
+    const medicamento = document.getElementById("medicamento").value.trim();
+    const texto = document.getElementById("detalle").value.trim();
+    if (medicamento) partes.push("Medicamento o procedimiento: " + medicamento + ".");
+    if (respuestaElegida) partes.push("Situación: " + respuestaElegida + ".");
+    if (texto) partes.push(texto);
+    return partes.join(" ");
+  }
+
+  function mostrarResumen() {
+    const datos = [
+      ["Trámite", tramiteElegido],
+      ["Medicamento o procedimiento", document.getElementById("medicamento").value.trim() || "—"],
+      ["Situación", respuestaElegida || "—"],
+      ["Nombre", document.getElementById("nombre").value.trim()],
+      ["WhatsApp", document.getElementById("telefono").value.replace(/\D/g, "")],
+      ["Municipio", document.getElementById("municipio").value.trim()],
+      ["EPS", document.getElementById("eps").value.trim()],
+      ["Archivos", (document.getElementById("adjuntos").files || []).length + " archivo(s)"]
+    ];
+    const resumen = document.getElementById("resumen");
+    resumen.innerHTML = "";
+    datos.forEach(function (d) {
+      const dt = document.createElement("dt"); dt.textContent = d[0];
+      const dd = document.createElement("dd"); dd.textContent = d[1];
+      resumen.appendChild(dt); resumen.appendChild(dd);
+    });
+  }
+
+  siguiente.addEventListener("click", function () {
+    const aviso = validarPaso(pasoActual);
+    if (aviso) { errorTexto.textContent = aviso; return; }
+    if (pasoActual < 4) { mostrarPaso(pasoActual + 1); return; }
+    enviar();
+  });
+
+  atras.addEventListener("click", function () { if (pasoActual > 1) mostrarPaso(pasoActual - 1); });
+
+  // ===== ARCHIVOS: vista previa =====
+  function mostrarArchivos() {
+    const contenedor = document.getElementById("adjuntos-lista");
+    const archivos = Array.from(document.getElementById("adjuntos").files || []);
+    contenedor.innerHTML = "";
+    if (!archivos.length) { contenedor.textContent = "Ningún archivo seleccionado"; return; }
+
+    archivos.forEach(function (f) {
+      const fila = document.createElement("div");
+      fila.className = "archivo-fila";
+      if (f.type.indexOf("image/") === 0) {
+        const img = document.createElement("img");
+        img.className = "miniatura";
+        img.alt = "Vista previa de " + f.name;
+        img.src = URL.createObjectURL(f);
+        fila.appendChild(img);
+      } else {
+        const pdf = document.createElement("span");
+        pdf.className = "miniatura miniatura-pdf";
+        pdf.textContent = "PDF";
+        fila.appendChild(pdf);
+      }
+      const info = document.createElement("div");
+      info.className = "archivo-info";
+      const nombre = document.createElement("strong");
+      nombre.textContent = f.name;
+      const tamano = document.createElement("div");
+      tamano.textContent = (f.size / 1024 / 1024).toFixed(1).replace(".", ",") + " MB";
+      info.appendChild(nombre);
+      info.appendChild(tamano);
+      if (TIPOS_ARCHIVO.indexOf(f.type) === -1) info.appendChild(avisoArchivo("Formato no permitido. Use JPG, PNG o PDF."));
+      if (f.size > LIMITE_ARCHIVO) info.appendChild(avisoArchivo("Pesa más de 5 MB. Intente con una foto más pequeña."));
+      fila.appendChild(info);
+      contenedor.appendChild(fila);
+    });
+    if (archivos.length > 3) contenedor.appendChild(avisoArchivo("Puede enviar hasta 3 archivos. Quite alguno."));
+  }
+
+  function avisoArchivo(texto) {
+    const p = document.createElement("div");
+    p.className = "archivo-aviso";
+    p.textContent = texto;
+    return p;
+  }
+
+  document.getElementById("adjuntos").addEventListener("change", mostrarArchivos);
+
+  // ===== ENVÍO =====
+  function enviar() {
+    siguiente.disabled = true;
+    errorTexto.textContent = "";
 
     const nombre = document.getElementById("nombre").value.trim();
     const telefono = document.getElementById("telefono").value.replace(/\D/g, "");
     const municipio = document.getElementById("municipio").value.trim();
     const eps = document.getElementById("eps").value.trim();
-    const tramite = document.getElementById("tramite").value;
-    const detalle = document.getElementById("detalle").value.trim();
-    const consentimiento = document.getElementById("consentimiento").checked;
+    const detalle = construirDetalle();
+    const archivos = Array.from(document.getElementById("adjuntos").files || []);
 
-    if (!nombre || !municipio || !eps || !tramite) {
-      error.textContent = "Por favor llene todos los campos marcados.";
-      return;
-    }
-    if (telefono.length < 10) {
-      error.textContent = "Escriba un número de WhatsApp de 10 dígitos.";
-      return;
-    }
-    if (!consentimiento) {
-      error.textContent = "Para continuar necesitamos su autorización en el recuadro de datos.";
-      return;
-    }
+    const fd = new FormData();
+    fd.append("nombre", nombre);
+    fd.append("telefono", telefono);
+    fd.append("municipio", municipio);
+    fd.append("eps", eps);
+    fd.append("tramite", tramiteElegido);
+    fd.append("detalle", detalle);
+    fd.append("consentimiento", "true");
+    archivos.forEach(function (f) { fd.append("adjuntos", f, f.name); });
 
-    const mensaje =
-      "Hola, quiero solicitar un trámite en SansAutorization.\n" +
-      "Nombre: " + nombre + "\n" +
-      "WhatsApp: " + telefono + "\n" +
-      "Municipio: " + municipio + "\n" +
-      "EPS: " + eps + "\n" +
-      "Trámite: " + tramite + "\n" +
-      (detalle ? "Medicamento o procedimiento: " + detalle + "\n" : "") +
-      "Acepto el uso de mis datos para gestionar el trámite.";
-
-    fetch("/api/solicitudes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nombre: nombre, telefono: telefono, municipio: municipio, eps: eps, tramite: tramite, detalle: detalle, consentimiento: consentimiento })
-    })
+    fetch("/api/solicitudes", { method: "POST", body: fd })
       .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
       .then(function (res) {
         if (!res.ok) {
-          error.textContent = (res.data.errores || ["No se pudo guardar la solicitud."]).join(" ");
+          errorTexto.textContent = (res.data.errores || ["No se pudo guardar la solicitud."]).join(" ");
+          siguiente.disabled = false;
           return;
         }
-        window.open("https://wa.me/" + NUMERO_WHATSAPP + "?text=" + encodeURIComponent(mensaje), "_blank");
+        mostrarConfirmacion(res.data.codigo, nombre, telefono, archivos.length);
       })
       .catch(function () {
-        error.textContent = "No pudimos conectar con el servidor. Intente de nuevo.";
+        errorTexto.textContent = "No pudimos conectar con el servidor. Intente de nuevo.";
+        siguiente.disabled = false;
       });
+  }
+
+  function mostrarConfirmacion(codigo, nombre, telefono, cantidadArchivos) {
+    pasos.forEach(function (p) { p.classList.remove("activo"); });
+    navegacion.style.display = "none";
+    document.getElementById("progreso").textContent = "Solicitud enviada";
+    barra.style.width = "100%";
+    document.getElementById("codigo-mostrado").textContent = codigo;
+    const mensaje =
+      "Hola, acabo de enviar una solicitud en SansAutorization.\n" +
+      "Código: " + codigo + "\n" +
+      "Nombre: " + nombre + "\n" +
+      "Trámite: " + tramiteElegido + "\n" +
+      (cantidadArchivos ? "Adjunté " + cantidadArchivos + " archivo(s) en la página.\n" : "") +
+      "Por favor confirme que recibió mi solicitud.";
+    document.getElementById("enlace-whatsapp").href = "https://wa.me/" + NUMERO_WHATSAPP + "?text=" + encodeURIComponent(mensaje);
+    document.getElementById("confirmacion").classList.add("activo");
+    document.getElementById("confirmacion").scrollIntoView({ block: "center" });
+  }
+
+  mostrarPaso(1);
+
+  // ===== ASISTENTE VIRTUAL (reglas, sin IA) =====
+  const respuestas = {
+    precio: "Los precios son:\n• Simple: $20.000 (un solo paso ante la EPS).\n• Medio: $40.000 (hay que volver a radicar o hacer seguimiento).\n• Complejo: $70.000 (hubo rechazo o hay que escribir una PQR).\nEl nivel lo confirmamos antes de cobrar.",
+    pago: "Para empezar se paga la mitad del valor, y el resto al final. Puede pagar por Nequi, Daviplata o Bancolombia al número 3202692965.",
+    documentos: "Para empezar necesitamos:\n• Su documento de identidad.\n• El carné o certificado de afiliación a la EPS.\n• La fórmula médica vigente.\n• Si existe, el mensaje o la negativa de la EPS.",
+    como: "1. Nos escribe o llena el formulario.\n2. Le decimos el nivel y el precio.\n3. Paga la mitad para empezar.\n4. Radicamos y hacemos el seguimiento.\n5. Al final paga el resto.\nPuede ver el avance con su código en la página Ver mi caso.",
+    garantia: "No garantizamos que la EPS apruebe el trámite. Lo que garantizamos es que se haga bien y a tiempo. La decisión final la toma la EPS.",
+    tiempo: "El tiempo depende de cada caso y de la respuesta de la EPS. Le avisamos en cada paso, y puede verlo con su código.",
+    devolucion: "Si la EPS rechaza la solicitud por causas que no dependen de nosotros, el adelanto no se devuelve. Si no alcanzamos a radicar el trámite, se devuelve completo.",
+    zona: "Por ahora atendemos en Neiva, Huila.",
+    datos: "Sus datos solo se usan para gestionar su trámite. No los vendemos ni los compartimos con terceros, salvo con la EPS para resolver su caso. Puede leer más en la página Cómo tratamos sus datos."
+  };
+
+  const palabrasClave = [
+    { tema: "precio", palabras: ["precio", "cuanto", "cuesta", "valor", "costo", "tarifa"] },
+    { tema: "pago", palabras: ["pago", "pagar", "nequi", "daviplata", "bancolombia", "transferencia", "adelanto"] },
+    { tema: "documentos", palabras: ["documento", "documentos", "papel", "requisito", "llevar"] },
+    { tema: "como", palabras: ["como funciona", "como trabajan", "proceso", "pasos", "funciona"] },
+    { tema: "garantia", palabras: ["garantiza", "garantia", "aprueban", "aprobar", "aprobacion"] },
+    { tema: "tiempo", palabras: ["tarda", "demora", "tiempo"] },
+    { tema: "devolucion", palabras: ["devuelven", "devolucion", "devolver", "reembolso"] },
+    { tema: "zona", palabras: ["donde", "ciudad", "municipio", "neiva", "huila", "vereda", "campo"] },
+    { tema: "datos", palabras: ["datos", "privacidad", "informacion", "compartir"] }
+  ];
+
+  const menuPrincipal = [
+    { texto: "¿Cuánto cuesta?", tema: "precio" },
+    { texto: "¿Qué documentos necesito?", tema: "documentos" },
+    { texto: "¿Cómo funciona?", tema: "como" },
+    { texto: "¿Cómo se paga?", tema: "pago" },
+    { texto: "¿Me garantizan la aprobación?", tema: "garantia" },
+    { texto: "Quiero solicitar", accion: "solicitar" },
+    { texto: "Hablar por WhatsApp", accion: "whatsapp" }
+  ];
+
+  const mensajes = document.getElementById("mensajes");
+  const opciones = document.getElementById("opciones");
+  const asistente = document.getElementById("asistente");
+  const abrir = document.getElementById("abrir-asistente");
+
+  function quitarAcentos(texto) {
+    return texto.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  }
+
+  function escribir(texto, quien) {
+    const burbuja = document.createElement("div");
+    burbuja.className = "burbuja " + (quien === "yo" ? "yo" : "bot");
+    burbuja.textContent = texto;
+    mensajes.appendChild(burbuja);
+    mensajes.scrollTop = mensajes.scrollHeight;
+  }
+
+  function mostrarMenu() {
+    opciones.innerHTML = "";
+    menuPrincipal.forEach(function (op) {
+      const boton = document.createElement("button");
+      boton.type = "button";
+      boton.textContent = op.texto;
+      boton.addEventListener("click", function () { elegir(op); });
+      opciones.appendChild(boton);
+    });
+  }
+
+  function elegir(op) {
+    escribir(op.texto, "yo");
+    if (op.accion === "solicitar") {
+      escribir("Perfecto. Le llevo al formulario.", "bot");
+      document.getElementById("solicitar").scrollIntoView();
+      mostrarMenu();
+      return;
+    }
+    if (op.accion === "whatsapp") {
+      escribir("Le abro WhatsApp con el número del servicio.", "bot");
+      window.open("https://wa.me/" + NUMERO_WHATSAPP, "_blank");
+      return;
+    }
+    escribir(respuestas[op.tema], "bot");
+    mostrarMenu();
+  }
+
+  function preguntarLibre(texto) {
+    const limpio = quitarAcentos(texto);
+    const encontrado = palabrasClave.find(function (grupo) {
+      return grupo.palabras.some(function (p) { return limpio.indexOf(quitarAcentos(p)) !== -1; });
+    });
+    if (encontrado) {
+      escribir(respuestas[encontrado.tema], "bot");
+    } else {
+      escribir("No tengo una respuesta exacta para eso. Puede elegir una opción de abajo o tocar “Hablar por WhatsApp” para una atención personal.", "bot");
+    }
+    mostrarMenu();
+  }
+
+  document.getElementById("entrada").addEventListener("submit", function (evento) {
+    evento.preventDefault();
+    const campo = document.getElementById("pregunta");
+    const texto = campo.value.trim();
+    if (!texto) return;
+    escribir(texto, "yo");
+    campo.value = "";
+    preguntarLibre(texto);
+  });
+
+  abrir.addEventListener("click", function () {
+    asistente.classList.add("abierto");
+    abrir.setAttribute("aria-expanded", "true");
+    abrir.style.display = "none";
+    if (mensajes.childElementCount === 0) {
+      escribir("Hola, soy el asistente de SansAutorization. Puedo resolver dudas sobre precios, pagos y documentos. ¿Qué necesita saber?", "bot");
+      mostrarMenu();
+    }
+    document.getElementById("pregunta").focus();
+  });
+
+  document.getElementById("cerrar-asistente").addEventListener("click", function () {
+    asistente.classList.remove("abierto");
+    abrir.style.display = "";
+    abrir.setAttribute("aria-expanded", "false");
+    abrir.focus();
   });
 </script>
 

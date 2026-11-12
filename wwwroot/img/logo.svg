@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 64" role="img" aria-label="SansAutorization">
+  <rect width="64" height="64" rx="14" fill="#0b4f6c"/>
+  <path d="M32 11 L48 17 V31 C48 42 41 49 32 53 C23 49 16 42 16 31 V17 Z" fill="#ffffff"/>
+  <path d="M24 32 L30 38 L41 26" fill="none" stroke="#1f8a4c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="80" y="44" font-family="Arial, Helvetica, sans-serif" font-size="38"><tspan font-weight="700" fill="#0b4f6c">Sans</tspan><tspan font-weight="400" fill="#1f8a4c">Autorization</tspan></text>
+</svg>
