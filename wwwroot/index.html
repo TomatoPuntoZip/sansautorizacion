@@ -17,13 +17,14 @@
       --texto: #1d2733;
       --gris: #4f5968;
       --borde: #d5dde6;
+      --borde-control: #6b7685;
       --blanco: #ffffff;
       --aviso: #fff8e1;
       --aviso-borde: #b98a00;
       --error: #a4001d;
     }
     * { box-sizing: border-box; }
-    html { font-size: 19px; scroll-behavior: smooth; }
+    html { font-size: 19px; scroll-behavior: smooth; scroll-padding-bottom: 96px; /* deja libre el botón del asistente al enfocar */ }
     body {
       margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       color: var(--texto); background: var(--fondo); line-height: 1.55;
@@ -55,6 +56,7 @@
       border-radius: 12px; border: 2px solid transparent; cursor: pointer;
     }
     .btn:hover { background: var(--verde-oscuro); }
+    .btn[aria-disabled="true"], .btn-secundario[aria-disabled="true"] { opacity: 0.6; cursor: progress; }
     .btn-claro { background: var(--blanco); color: var(--azul); }
     .btn-claro:hover { background: var(--azul-claro); }
     .btn-secundario { background: var(--blanco); color: var(--azul); border-color: var(--azul); }
@@ -70,12 +72,6 @@
     .tarjeta p { margin: 0; color: var(--gris); font-size: 1rem; }
 
     section { padding: 40px 0 8px; }
-    .niveles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
-    .nivel { background: var(--blanco); border: 2px solid var(--borde); border-radius: 16px; padding: 20px; }
-    .nivel.destacado { border-color: var(--verde); }
-    .nivel .nombre { font-weight: 800; font-size: 1.15rem; }
-    .nivel .precio { font-size: 1.9rem; font-weight: 800; color: var(--verde-oscuro); margin: 4px 0 8px; }
-    .nivel p { margin: 0; color: var(--gris); }
     .nota { color: var(--gris); font-size: 1rem; }
 
     /* ----- Formulario por pasos ----- */
@@ -99,7 +95,7 @@
     .campo.ancho { grid-column: 1 / -1; }
     label, .etiqueta { font-weight: 700; margin-bottom: 6px; }
     input[type="text"], input[type="tel"], select, textarea {
-      width: 100%; font: inherit; padding: 12px; border: 2px solid var(--borde); border-radius: 10px; background: var(--blanco); color: var(--texto);
+      width: 100%; font: inherit; padding: 12px; border: 2px solid var(--borde-control); border-radius: 10px; background: var(--blanco); color: var(--texto);
     }
     textarea { min-height: 96px; resize: vertical; }
     .ayuda { margin: 0 0 8px; color: var(--gris); font-size: 0.95rem; }
@@ -116,7 +112,7 @@
     .etiqueta-archivos { font-weight: 700; margin-bottom: 4px; display: block; }
     .zona-archivos { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; border: 2px dashed var(--borde); border-radius: 12px; padding: 14px; background: #fafcfd; }
     .zona-archivos:focus-within { outline: 3px solid #0a6fa0; outline-offset: 2px; }
-    .boton-archivos { background: var(--azul-claro); color: var(--azul); border: 2px solid #b9d3e0; border-radius: 10px; padding: 10px 16px; font-weight: 700; font-size: 1rem; cursor: pointer; }
+    .boton-archivos { background: var(--azul-claro); color: var(--azul); border: 2px solid #b9d3e0; border-radius: 10px; padding: 10px 16px; font-weight: 700; font-size: 1rem; font-family: inherit; cursor: pointer; }
     .boton-archivos:hover { background: #d4e6f0; }
     .input-oculto { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
     .lista-archivos { color: var(--gris); font-size: 0.95rem; word-break: break-word; width: 100%; }
@@ -139,8 +135,11 @@
 
     /* ----- Asistente virtual ----- */
     #abrir-asistente { position: fixed; right: 18px; bottom: 18px; z-index: 20; background: var(--azul); color: var(--blanco); border: none; border-radius: 999px; padding: 14px 20px; font: inherit; font-weight: 700; font-size: 1.05rem; cursor: pointer; box-shadow: 0 8px 22px rgba(11, 79, 108, 0.3); }
-    #asistente { position: fixed; right: 18px; bottom: 18px; z-index: 30; width: min(420px, calc(100vw - 36px)); height: min(640px, calc(100vh - 110px)); font-size: 17px; background: var(--blanco); border-radius: 16px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25); display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--borde); }
-    #asistente.abierto { display: flex; }
+    /* El asistente es un diálogo modal: se coloca abajo a la derecha y no oscurece la página */
+    #asistente { position: fixed; inset: auto 18px 18px auto; margin: 0; width: min(420px, calc(100vw - 36px)); max-width: calc(100vw - 36px); height: min(640px, calc(100vh - 110px)); max-height: calc(100vh - 110px); padding: 0; font-size: 17px; color: var(--texto); background: var(--blanco); border-radius: 16px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25); flex-direction: column; overflow: hidden; border: 1px solid var(--borde); }
+    #asistente:not([open]) { display: none; }
+    #asistente[open] { display: flex; }
+    #asistente::backdrop { background: transparent; }
     #asistente header { background: var(--azul); color: var(--blanco); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
     #asistente header button { background: transparent; border: 2px solid var(--blanco); color: var(--blanco); border-radius: 8px; padding: 4px 10px; font: inherit; cursor: pointer; }
     #mensajes { flex: 1 1 auto; min-height: 160px; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--fondo); }
@@ -153,6 +152,11 @@
     #entrada { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--borde); background: var(--blanco); }
     #entrada input { flex: 1; font: inherit; padding: 10px; border: 2px solid var(--borde); border-radius: 10px; }
     #entrada button { background: var(--verde); color: var(--blanco); border: none; border-radius: 10px; padding: 10px 14px; font: inherit; font-weight: 700; cursor: pointer; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .barra-progreso span { transition: none; }
+    }
 
     footer { margin-top: 40px; padding: 26px 0 40px; background: var(--blanco); border-top: 1px solid var(--borde); color: var(--gris); font-size: 0.95rem; }
     footer a { color: var(--azul); font-weight: 700; }
@@ -174,7 +178,6 @@
       <img class="logo" src="img/logo.svg" alt="SansAutorization" width="220" height="32">
       <nav class="menu" aria-label="Principal">
         <a href="seguimiento.html">Ver mi caso</a>
-        <a href="#precios">Precios</a>
       </nav>
     </div>
     <p class="lema">Gestionamos sus trámites ante la EPS en Neiva</p>
@@ -183,7 +186,6 @@
       <p>Autorizaciones y reclamaciones de medicamentos, para que usted no tenga que perder días enteros. Atendemos en Neiva, Huila.</p>
       <div class="botones">
         <a class="btn" href="#solicitar">Solicitar mi trámite</a>
-        <a class="btn btn-claro" href="#precios">Ver precios</a>
       </div>
     </div>
   </div>
@@ -217,31 +219,8 @@
   </div>
 
   <div class="contenedor">
-    <section id="precios" aria-labelledby="titulo-precios">
-      <h2 id="titulo-precios">Precios</h2>
-      <p class="subtitulo">El nivel lo definimos al recibir su solicitud, y se lo confirmamos antes de cobrar.</p>
-      <div class="niveles">
-        <div class="nivel">
-          <div class="nombre">Simple</div>
-          <div class="precio">$20.000</div>
-          <p>Un solo paso ante la EPS, sin rechazo previo.</p>
-        </div>
-        <div class="nivel destacado">
-          <div class="nombre">Medio</div>
-          <div class="precio">$40.000</div>
-          <p>Hay que volver a radicar, corregir documentos o hacer seguimiento de varios días.</p>
-        </div>
-        <div class="nivel">
-          <div class="nombre">Complejo</div>
-          <div class="precio">$70.000</div>
-          <p>Hubo rechazo, hay que escribir una PQR o escalar el caso.</p>
-        </div>
-      </div>
-      <p class="nota">Para empezar se paga la mitad del valor y el resto al final. Si quiere saber cómo se cobra, pregúntele al asistente o escríbanos por WhatsApp.</p>
-    </section>
-
     <section id="solicitar" aria-labelledby="titulo-solicitud">
-      <h2 id="titulo-solicitud">Solicitar mi trámite</h2>
+      <h2 id="titulo-solicitud" tabindex="-1">Solicitar mi trámite</h2>
       <p class="subtitulo">Son cuatro pasos. Puede volver atrás en cualquier momento.</p>
 
       <form id="formulario" class="asistente-formulario" novalidate>
@@ -264,12 +243,12 @@
           <h3 id="titulo-paso-2">2. Cuéntenos un poco más</h3>
           <div class="campos">
             <div class="campo ancho" id="bloque-medicamento">
-              <label for="medicamento">Nombre del medicamento o procedimiento</label>
-              <input type="text" id="medicamento" placeholder="Ej: Losartán 50 mg, o lo que le dijo el médico">
+              <label for="medicamento">Nombre del medicamento o procedimiento (obligatorio)</label>
+              <input type="text" id="medicamento" maxlength="100" placeholder="Ej: Losartán 50 mg, o lo que le dijo el médico">
             </div>
             <div class="campo ancho" id="bloque-respuesta">
-              <span class="etiqueta">¿Qué le ha respondido la EPS?</span>
-              <div class="opciones" role="group" aria-label="Respuesta de la EPS" id="opciones-respuesta">
+              <span class="etiqueta" id="pregunta-respuesta">¿Qué le ha respondido la EPS? (obligatorio)</span>
+              <div class="opciones" role="group" aria-labelledby="pregunta-respuesta" id="opciones-respuesta">
                 <button type="button" class="opcion" data-respuesta="Todavía no la han pedido" aria-pressed="false">Todavía no la han pedido</button>
                 <button type="button" class="opcion" data-respuesta="Me pidieron documentos" aria-pressed="false">Me pidieron documentos</button>
                 <button type="button" class="opcion" data-respuesta="Me la negaron" aria-pressed="false">Me la negaron</button>
@@ -277,8 +256,8 @@
               </div>
             </div>
             <div class="campo ancho" id="bloque-reclamo">
-              <span class="etiqueta">¿Qué pasó con el medicamento?</span>
-              <div class="opciones" role="group" aria-label="Motivo de la reclamación" id="opciones-reclamo">
+              <span class="etiqueta" id="pregunta-reclamo">¿Qué pasó con el medicamento? (obligatorio)</span>
+              <div class="opciones" role="group" aria-labelledby="pregunta-reclamo" id="opciones-reclamo">
                 <button type="button" class="opcion" data-respuesta="No me lo entregaron en la farmacia" aria-pressed="false">No me lo entregaron en la farmacia</button>
                 <button type="button" class="opcion" data-respuesta="Me dijeron que no hay en stock" aria-pressed="false">Me dijeron que no hay en stock</button>
                 <button type="button" class="opcion" data-respuesta="Me dijeron que no está autorizado" aria-pressed="false">Me dijeron que no está autorizado</button>
@@ -287,7 +266,7 @@
             </div>
             <div class="campo ancho" id="bloque-texto">
               <label for="detalle" id="etiqueta-detalle">Cuéntenos qué necesita</label>
-              <textarea id="detalle" placeholder="Escriba con sus palabras. No necesita escribir nada técnico."></textarea>
+              <textarea id="detalle" maxlength="400" placeholder="Escriba con sus palabras. No necesita escribir nada técnico."></textarea>
             </div>
           </div>
         </div>
@@ -297,21 +276,21 @@
           <h3>3. Sus datos</h3>
           <div class="campos">
             <div class="campo">
-              <label for="nombre">Su nombre</label>
-              <input type="text" id="nombre" autocomplete="name">
+              <label for="nombre">Su nombre (obligatorio)</label>
+              <input type="text" id="nombre" autocomplete="name" maxlength="120" aria-required="true">
             </div>
             <div class="campo">
-              <label for="telefono">Su número de WhatsApp</label>
-              <input type="tel" id="telefono" autocomplete="tel" placeholder="Ej: 3001234567">
+              <label for="telefono">Su número de WhatsApp (obligatorio)</label>
+              <input type="tel" id="telefono" autocomplete="tel" placeholder="Ej: 3001234567" aria-required="true">
             </div>
             <div class="campo">
-              <label for="municipio">Municipio donde vive</label>
-              <input type="text" id="municipio" value="Neiva">
-              <p class="ayuda">Por ahora atendemos en Neiva y alrededores.</p>
+              <label for="municipio">Municipio donde vive (obligatorio)</label>
+              <input type="text" id="municipio" value="Neiva" maxlength="100" aria-required="true" aria-describedby="ayuda-municipio">
+              <p class="ayuda" id="ayuda-municipio">Por ahora atendemos en Neiva y alrededores.</p>
             </div>
             <div class="campo">
-              <label for="eps">Su EPS</label>
-              <input type="text" id="eps" list="lista-eps" placeholder="Escriba o elija la suya">
+              <label for="eps">Su EPS (obligatorio)</label>
+              <input type="text" id="eps" list="lista-eps" placeholder="Escriba o elija la suya" maxlength="100" aria-required="true">
               <datalist id="lista-eps">
                 <option value="Nueva EPS"></option>
                 <option value="Sanitas"></option>
@@ -325,10 +304,10 @@
             </div>
             <div class="campo ancho">
               <span class="etiqueta-archivos">Fotos o PDF de la fórmula, la autorización o la negativa de la EPS</span>
-              <p class="ayuda">Opcional. Hasta 3 archivos de 5 MB cada uno (JPG, PNG o PDF).</p>
+              <p class="ayuda" id="ayuda-archivos">Opcional. Hasta 3 archivos de 5 MB cada uno (JPG, PNG o PDF).</p>
               <div class="zona-archivos">
-                <label for="adjuntos" class="boton-archivos">Elegir archivos</label>
-                <input type="file" id="adjuntos" class="input-oculto" accept="image/jpeg,image/png,application/pdf" multiple>
+                <button type="button" class="boton-archivos" id="elegir-archivos" aria-describedby="ayuda-archivos">Elegir archivos</button>
+                <input type="file" id="adjuntos" class="input-oculto" accept="image/jpeg,image/png,application/pdf" multiple tabindex="-1" aria-hidden="true">
                 <div id="adjuntos-lista" class="lista-archivos" aria-live="polite">Ningún archivo seleccionado</div>
               </div>
             </div>
@@ -356,9 +335,11 @@
 
         <!-- Confirmación -->
         <div class="confirmacion" id="confirmacion" role="status" aria-live="polite">
-          <h3>¡Recibimos su solicitud!</h3>
+          <h3 id="titulo-confirmacion">¡Recibimos su solicitud!</h3>
           <p>Guarde este código. Con el código y los últimos 4 números de su WhatsApp puede ver el avance de su trámite.</p>
           <div class="codigo-grande" id="codigo-mostrado"></div>
+          <p class="ayuda"><button type="button" class="btn btn-secundario" id="copiar-codigo">Copiar código</button></p>
+          <p class="ayuda" id="estado-copia" aria-live="polite"></p>
           <div class="botones" style="justify-content:center">
             <a class="btn" id="enlace-whatsapp" href="#" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
             <a class="btn btn-secundario" href="seguimiento.html">Ver el avance de mi trámite</a>
@@ -383,7 +364,7 @@
       </details>
       <details>
         <summary>¿Cómo se paga?</summary>
-        <p>Para empezar se paga la mitad del valor. El resto se paga cuando el caso avanza o queda resuelto. Puede pagar por Nequi, Daviplata o Bancolombia al número 3202692965.</p>
+        <p>Para empezar se paga la mitad del valor. El resto se paga cuando la EPS apruebe su trámite o entregue el medicamento. Puede pagar por Nequi, Daviplata o Bancolombia al número 3202692965, a nombre de Santiago Cardoso Padilla.</p><p>Pague solo a esa cuenta. Si alguien le pide pagar a otra persona por este trámite, no pague y escríbanos por WhatsApp.</p>
       </details>
     </section>
   </div>
@@ -397,8 +378,8 @@
 </footer>
 
 <!-- Asistente virtual sin inteligencia artificial: responde con textos predefinidos -->
-<button id="abrir-asistente" type="button" aria-controls="asistente" aria-expanded="false">Asistente</button>
-<div id="asistente" role="dialog" aria-label="Asistente virtual de SansAutorization">
+<button id="abrir-asistente" type="button" aria-controls="asistente" aria-expanded="false" aria-label="Abrir asistente de ayuda">Asistente</button>
+<dialog id="asistente" aria-label="Asistente virtual de SansAutorization">
   <header>
     <span>Asistente SansAutorization</span>
     <button type="button" id="cerrar-asistente" aria-label="Cerrar asistente">Cerrar</button>
@@ -409,13 +390,23 @@
     <input type="text" id="pregunta" placeholder="Escriba su pregunta" aria-label="Escriba su pregunta">
     <button type="submit">Enviar</button>
   </form>
-</div>
+</dialog>
 
 <script>
   // ===== CONFIGURACIÓN =====
   const NUMERO_WHATSAPP = "573202692965";
   const LIMITE_ARCHIVO = 5 * 1024 * 1024;
   const TIPOS_ARCHIVO = ["image/jpeg", "image/png", "application/pdf"];
+  const MAX_ARCHIVOS = 3;
+  const REDUCIR_DESDE = 1024 * 1024;  // las fotos de más de 1 MB se reducen antes de enviarlas
+  const LADO_MAXIMO_FOTO = 2000;      // píxeles del lado más largo, después de reducir
+  const CALIDAD_JPG = 0.85;
+  // Acepta +57 y el 57 al inicio: 3001234567 o 573001234567
+  function soloDigitos(texto) {
+    let d = texto.replace(/\D/g, "");
+    if (d.length === 12 && d.indexOf("57") === 0) d = d.slice(2);
+    return d;
+  }
 
   // ===== PASOS DEL FORMULARIO =====
   const pasos = Array.from(document.querySelectorAll("#formulario .paso"));
@@ -428,9 +419,15 @@
   let pasoActual = 1;
   let tramiteElegido = "";
   let respuestaElegida = "";
+  // Archivos: lo que se valida y se envía (ya reducido), y si todavía se están preparando
+  let archivosListos = [];
+  let preparando = false;
+  let eleccionArchivos = 0;
+  let urlsVistaPrevia = [];
 
-  function mostrarPaso(n) {
+  function mostrarPaso(n, enfocar = true) {
     pasoActual = n;
+    if (n < 4) claveDeEnvio = null; // al volver a un paso anterior, el próximo envío tendrá una clave nueva
     pasos.forEach(function (p) { p.classList.toggle("activo", Number(p.dataset.paso) === n); });
     progreso.textContent = "Paso " + n + " de 4";
     barra.style.width = (n * 25) + "%";
@@ -439,9 +436,9 @@
     errorTexto.textContent = "";
     actualizarPaso2();
     if (n === 4) mostrarResumen();
-    document.querySelector("#solicitar").scrollIntoView({ block: "start" });
+    if (enfocar) document.querySelector("#solicitar").scrollIntoView({ block: "start" });
     const titulo = document.querySelector('.paso[data-paso="' + n + '"] h3');
-    if (titulo) titulo.setAttribute("tabindex", "-1"), titulo.focus({ preventScroll: true });
+    if (enfocar && titulo) { titulo.setAttribute("tabindex", "-1"); titulo.focus({ preventScroll: true }); }
   }
 
   function marcarUnico(grupo, boton) {
@@ -497,12 +494,12 @@
     }
     if (n === 3) {
       if (!document.getElementById("nombre").value.trim()) return "Escriba su nombre.";
-      if (document.getElementById("telefono").value.replace(/\D/g, "").length !== 10) return "Escriba un WhatsApp de 10 dígitos.";
+      if (soloDigitos(document.getElementById("telefono").value).length !== 10) return "Escriba un WhatsApp de 10 dígitos.";
       if (!document.getElementById("municipio").value.trim()) return "Escriba el municipio.";
       if (!document.getElementById("eps").value.trim()) return "Escriba su EPS.";
-      const archivos = Array.from(document.getElementById("adjuntos").files || []);
-      if (archivos.length > 3) return "Puede adjuntar hasta 3 archivos.";
-      if (archivos.some(function (f) { return f.size > LIMITE_ARCHIVO || TIPOS_ARCHIVO.indexOf(f.type) === -1; }))
+      if (preparando) return "Espere un momento: estamos preparando sus archivos.";
+      if (archivosListos.length > MAX_ARCHIVOS) return "Puede adjuntar hasta 3 archivos. Elija de nuevo los que quiera enviar.";
+      if (archivosListos.some(function (item) { return archivoRechazado(item.archivo); }))
         return "Revise los archivos: solo JPG, PNG o PDF, y de máximo 5 MB.";
     }
     if (n === 4 && !document.getElementById("consentimiento").checked)
@@ -513,7 +510,8 @@
   // Texto que se guarda como detalle: une el trámite con las respuestas
   function construirDetalle() {
     const partes = [];
-    const medicamento = document.getElementById("medicamento").value.trim();
+    // Solo cuenta el medicamento si ese campo está visible para este trámite
+    const medicamento = document.getElementById("bloque-medicamento").style.display === "none" ? "" : document.getElementById("medicamento").value.trim();
     const texto = document.getElementById("detalle").value.trim();
     if (medicamento) partes.push("Medicamento o procedimiento: " + medicamento + ".");
     if (respuestaElegida) partes.push("Situación: " + respuestaElegida + ".");
@@ -524,13 +522,13 @@
   function mostrarResumen() {
     const datos = [
       ["Trámite", tramiteElegido],
-      ["Medicamento o procedimiento", document.getElementById("medicamento").value.trim() || "—"],
+      ["Medicamento o procedimiento", (document.getElementById("bloque-medicamento").style.display === "none" ? "" : document.getElementById("medicamento").value.trim()) || "—"],
       ["Situación", respuestaElegida || "—"],
       ["Nombre", document.getElementById("nombre").value.trim()],
-      ["WhatsApp", document.getElementById("telefono").value.replace(/\D/g, "")],
+      ["WhatsApp", soloDigitos(document.getElementById("telefono").value)],
       ["Municipio", document.getElementById("municipio").value.trim()],
       ["EPS", document.getElementById("eps").value.trim()],
-      ["Archivos", (document.getElementById("adjuntos").files || []).length + " archivo(s)"]
+      ["Archivos", archivosListos.length + " archivo(s)"]
     ];
     const resumen = document.getElementById("resumen");
     resumen.innerHTML = "";
@@ -541,51 +539,136 @@
     });
   }
 
+  // Lleva el foco al primer dato que falta, para que la persona sepa qué corregir
+  // Devuelve la primera opción de un grupo que todavía no está elegida
+  function primeraOpcionSinElegir(contenedor) {
+    const opciones = Array.from(contenedor.querySelectorAll(".opcion"));
+    return opciones.find(function (b) { return b.getAttribute("aria-pressed") !== "true"; }) || opciones[0];
+  }
+
+  // Lleva el foco al primer dato que falta, con el mismo orden que validarPaso, y marca solo ese campo
+  function enfocarProblema(n) {
+    let destino = null;
+    if (n === 1) {
+      destino = primeraOpcionSinElegir(document.querySelector('.paso[data-paso="1"]'));
+    } else if (n === 2) {
+      const esAutorizacion = tramiteElegido === "Autorización de medicamento";
+      const esReclamo = tramiteElegido === "Reclamación de medicamento";
+      const medicamento = document.getElementById("medicamento");
+      if ((esAutorizacion || esReclamo) && !medicamento.value.trim()) destino = medicamento;
+      else if (esAutorizacion && !respuestaElegida) destino = primeraOpcionSinElegir(document.getElementById("bloque-respuesta"));
+      else if (esReclamo && !respuestaElegida) destino = primeraOpcionSinElegir(document.getElementById("bloque-reclamo"));
+      else destino = document.getElementById("detalle");
+    } else if (n === 3) {
+      const nombre = document.getElementById("nombre");
+      const telefono = document.getElementById("telefono");
+      const municipio = document.getElementById("municipio");
+      const eps = document.getElementById("eps");
+      const faltas = [
+        { campo: nombre, falla: !nombre.value.trim() },
+        { campo: telefono, falla: soloDigitos(telefono.value).length !== 10 },
+        { campo: municipio, falla: !municipio.value.trim() },
+        { campo: eps, falla: !eps.value.trim() }
+      ];
+      const primero = faltas.find(function (f) { return f.falla; });
+      if (primero) destino = primero.campo;
+      else destino = document.getElementById("elegir-archivos"); // el problema son los archivos
+    } else if (n === 4) {
+      destino = document.getElementById("consentimiento");
+    }
+    if (destino) {
+      destino.focus();
+      if (destino.matches("input, textarea, select")) destino.setAttribute("aria-invalid", "true");
+    }
+  }
+
   siguiente.addEventListener("click", function () {
+    // Un botón con aria-disabled no responde; a diferencia de disabled, conserva el foco
+    if (siguiente.getAttribute("aria-disabled") === "true") return;
+    document.querySelectorAll("#formulario [aria-invalid]").forEach(function (campo) { campo.removeAttribute("aria-invalid"); });
     const aviso = validarPaso(pasoActual);
-    if (aviso) { errorTexto.textContent = aviso; return; }
+    if (aviso) { errorTexto.textContent = aviso; enfocarProblema(pasoActual); return; }
     if (pasoActual < 4) { mostrarPaso(pasoActual + 1); return; }
     enviar();
   });
 
-  atras.addEventListener("click", function () { if (pasoActual > 1) mostrarPaso(pasoActual - 1); });
+  atras.addEventListener("click", function () {
+    if (atras.getAttribute("aria-disabled") === "true") return;
+    if (pasoActual > 1) mostrarPaso(pasoActual - 1);
+  });
 
-  // ===== ARCHIVOS: vista previa =====
-  function mostrarArchivos() {
-    const contenedor = document.getElementById("adjuntos-lista");
-    const archivos = Array.from(document.getElementById("adjuntos").files || []);
-    contenedor.innerHTML = "";
-    if (!archivos.length) { contenedor.textContent = "Ningún archivo seleccionado"; return; }
+  // ===== ARCHIVOS: fotos vueltas a dibujar y vista previa =====
+  // Toda foto se vuelve a dibujar en el navegador. Así se quitan los datos ocultos que traen las fotos
+  // (por ejemplo, la ubicación del celular) y se reduce su tamaño. Los PDF se dejan tal como están.
+  function mb(bytes) {
+    return (bytes / 1024 / 1024).toFixed(1).replace(".", ",") + " MB";
+  }
 
-    archivos.forEach(function (f) {
-      const fila = document.createElement("div");
-      fila.className = "archivo-fila";
-      if (f.type.indexOf("image/") === 0) {
-        const img = document.createElement("img");
-        img.className = "miniatura";
-        img.alt = "Vista previa de " + f.name;
-        img.src = URL.createObjectURL(f);
-        fila.appendChild(img);
-      } else {
-        const pdf = document.createElement("span");
-        pdf.className = "miniatura miniatura-pdf";
-        pdf.textContent = "PDF";
-        fila.appendChild(pdf);
-      }
-      const info = document.createElement("div");
-      info.className = "archivo-info";
-      const nombre = document.createElement("strong");
-      nombre.textContent = f.name;
-      const tamano = document.createElement("div");
-      tamano.textContent = (f.size / 1024 / 1024).toFixed(1).replace(".", ",") + " MB";
-      info.appendChild(nombre);
-      info.appendChild(tamano);
-      if (TIPOS_ARCHIVO.indexOf(f.type) === -1) info.appendChild(avisoArchivo("Formato no permitido. Use JPG, PNG o PDF."));
-      if (f.size > LIMITE_ARCHIVO) info.appendChild(avisoArchivo("Pesa más de 5 MB. Intente con una foto más pequeña."));
-      fila.appendChild(info);
-      contenedor.appendChild(fila);
-    });
-    if (archivos.length > 3) contenedor.appendChild(avisoArchivo("Puede enviar hasta 3 archivos. Quite alguno."));
+  function tamanoLegible(bytes) {
+    return bytes < 1024 * 1024 ? Math.max(1, Math.round(bytes / 1024)) + " KB" : mb(bytes);
+  }
+
+  function nombreJpg(nombre) {
+    return nombre.replace(/\.[^.]*$/, "") + ".jpg";
+  }
+
+  function archivoRechazado(archivo) {
+    return archivo.size > LIMITE_ARCHIVO || TIPOS_ARCHIVO.indexOf(archivo.type) === -1;
+  }
+
+  // Un botón "no disponible" se marca con aria-disabled y no con disabled: así no pierde el foco
+  function marcarNoDisponible(boton, no) {
+    boton.setAttribute("aria-disabled", no ? "true" : "false");
+  }
+
+  // Lee una imagen con el navegador. Devuelve null si no puede leerla.
+  function leerImagen(archivo) {
+    if (!("createImageBitmap" in window)) return Promise.resolve(null);
+    return createImageBitmap(archivo, { imageOrientation: "from-image" })
+      .catch(function () { return createImageBitmap(archivo); })
+      .catch(function () { return null; });
+  }
+
+  // Dibuja la foto de nuevo: lado más largo de 2000 píxeles y JPG al 85 %
+  async function reencodificarFoto(original) {
+    const imagen = await leerImagen(original);
+    if (!imagen) return null;
+    try {
+      const escala = Math.min(1, LADO_MAXIMO_FOTO / Math.max(imagen.width, imagen.height));
+      const lienzo = document.createElement("canvas");
+      lienzo.width = Math.round(imagen.width * escala);
+      lienzo.height = Math.round(imagen.height * escala);
+      const contexto = lienzo.getContext("2d");
+      contexto.fillStyle = "#ffffff"; // fondo blanco, por si la imagen tiene transparencia
+      contexto.fillRect(0, 0, lienzo.width, lienzo.height);
+      contexto.drawImage(imagen, 0, 0, lienzo.width, lienzo.height);
+      const blob = await new Promise(function (resolver) {
+        lienzo.toBlob(resolver, "image/jpeg", CALIDAD_JPG);
+      });
+      if (!blob) return null;
+      return new File([blob], nombreJpg(original.name), { type: "image/jpeg", lastModified: Date.now() });
+    } finally {
+      if (imagen.close) imagen.close();
+    }
+  }
+
+  // Prepara un archivo elegido. Un PDF se deja igual. Si una foto no se puede leer, se marca como bloqueada:
+  // no se envía, porque así no se podrían quitar sus datos ocultos.
+  async function prepararArchivo(original) {
+    if (original.type === "application/pdf") return { archivo: original, original: original, bloqueado: false };
+    let listo = null;
+    try {
+      listo = await reencodificarFoto(original);
+    } catch (e) {
+      listo = null;
+    }
+    if (!listo) return { archivo: original, original: original, bloqueado: true };
+    return { archivo: listo, original: original, bloqueado: false };
+  }
+
+  function liberarVistas() {
+    urlsVistaPrevia.forEach(function (url) { URL.revokeObjectURL(url); });
+    urlsVistaPrevia = [];
   }
 
   function avisoArchivo(texto) {
@@ -595,72 +678,237 @@
     return p;
   }
 
-  document.getElementById("adjuntos").addEventListener("change", mostrarArchivos);
+  // Muestra lo que se va a enviar: nombre, tamaño (y si se redujo) y avisos
+  function mostrarArchivos() {
+    const contenedor = document.getElementById("adjuntos-lista");
+    liberarVistas();
+    contenedor.innerHTML = "";
+    if (preparando) { contenedor.textContent = "Preparando sus archivos…"; return; }
+    if (!archivosListos.length) { contenedor.textContent = "Ningún archivo seleccionado"; return; }
+
+    archivosListos.forEach(function (item) {
+      const f = item.archivo;
+      const fila = document.createElement("div");
+      fila.className = "archivo-fila";
+      if (!item.bloqueado && f.type.indexOf("image/") === 0) {
+        const img = document.createElement("img");
+        img.className = "miniatura";
+        img.alt = "Vista previa de " + item.original.name;
+        img.src = URL.createObjectURL(f);
+        urlsVistaPrevia.push(img.src);
+        fila.appendChild(img);
+      } else {
+        const marca = document.createElement("span");
+        marca.className = "miniatura miniatura-pdf";
+        marca.textContent = f.type === "application/pdf" ? "PDF" : "?";
+        fila.appendChild(marca);
+      }
+      const reducida = f !== item.original && f.size < item.original.size;
+      const info = document.createElement("div");
+      info.className = "archivo-info";
+      const nombre = document.createElement("strong");
+      nombre.textContent = item.original.name;
+      const tamano = document.createElement("div");
+      tamano.textContent = tamanoLegible(f.size) + (reducida ? " (reducida de " + tamanoLegible(item.original.size) + " para enviarla más rápido)" : "");
+      info.appendChild(nombre);
+      info.appendChild(tamano);
+      if (item.bloqueado) info.appendChild(avisoArchivo("No pudimos leer este archivo. Use una foto JPG o PNG, o un PDF."));
+      else if (TIPOS_ARCHIVO.indexOf(f.type) === -1) info.appendChild(avisoArchivo("Formato no permitido. Use JPG, PNG o PDF."));
+      if (!item.bloqueado && f.size > LIMITE_ARCHIVO) {
+        info.appendChild(avisoArchivo(f.type === "application/pdf"
+          ? "El PDF pesa más de 5 MB. Use un archivo más pequeño."
+          : "Pesa más de 5 MB. Use una foto de menor tamaño."));
+      }
+      fila.appendChild(info);
+      contenedor.appendChild(fila);
+    });
+    if (archivosListos.length > MAX_ARCHIVOS) {
+      contenedor.appendChild(avisoArchivo("Puede enviar hasta 3 archivos. Elija de nuevo los que quiera enviar."));
+    }
+  }
+
+  // Al elegir archivos se preparan (se vuelven a dibujar las fotos) antes de poder seguir.
+  // Si son más de tres, no se preparan: validarPaso(3) lo rechaza con su mensaje.
+  document.getElementById("adjuntos").addEventListener("change", async function () {
+    const seleccion = Array.from(this.files || []);
+    const eleccion = ++eleccionArchivos;
+    if (seleccion.length > MAX_ARCHIVOS) {
+      archivosListos = seleccion.map(function (original) { return { archivo: original, original: original, bloqueado: false }; });
+      preparando = false;
+      marcarNoDisponible(siguiente, false);
+      mostrarArchivos();
+      return;
+    }
+    archivosListos = [];
+    preparando = seleccion.length > 0;
+    marcarNoDisponible(siguiente, preparando);
+    mostrarArchivos();
+    if (!seleccion.length) return;
+
+    const listos = await Promise.all(seleccion.map(function (original) { return prepararArchivo(original); }));
+    if (eleccion !== eleccionArchivos) return; // se eligieron otros archivos mientras tanto
+    archivosListos = listos;
+    preparando = false;
+    marcarNoDisponible(siguiente, false);
+    mostrarArchivos();
+  });
+
+  // Botón "Elegir archivos": abre el selector (el campo real queda oculto y no recibe el foco)
+  document.getElementById("elegir-archivos").addEventListener("click", function () {
+    document.getElementById("adjuntos").click();
+  });
 
   // ===== ENVÍO =====
-  function enviar() {
-    siguiente.disabled = true;
-    errorTexto.textContent = "";
-
-    const nombre = document.getElementById("nombre").value.trim();
-    const telefono = document.getElementById("telefono").value.replace(/\D/g, "");
-    const municipio = document.getElementById("municipio").value.trim();
-    const eps = document.getElementById("eps").value.trim();
-    const detalle = construirDetalle();
-    const archivos = Array.from(document.getElementById("adjuntos").files || []);
-
-    const fd = new FormData();
-    fd.append("nombre", nombre);
-    fd.append("telefono", telefono);
-    fd.append("municipio", municipio);
-    fd.append("eps", eps);
-    fd.append("tramite", tramiteElegido);
-    fd.append("detalle", detalle);
-    fd.append("consentimiento", "true");
-    archivos.forEach(function (f) { fd.append("adjuntos", f, f.name); });
-
-    fetch("/api/solicitudes", { method: "POST", body: fd })
-      .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
-      .then(function (res) {
-        if (!res.ok) {
-          errorTexto.textContent = (res.data.errores || ["No se pudo guardar la solicitud."]).join(" ");
-          siguiente.disabled = false;
-          return;
-        }
-        mostrarConfirmacion(res.data.codigo, nombre, telefono, archivos.length);
-      })
-      .catch(function () {
-        errorTexto.textContent = "No pudimos conectar con el servidor. Intente de nuevo.";
-        siguiente.disabled = false;
-      });
+  // Mientras se envía, el botón dice que espere; no responde a nuevos clics y conserva el foco
+  function ponerEnvio(enviando) {
+    marcarNoDisponible(siguiente, enviando);
+    marcarNoDisponible(atras, enviando);
+    siguiente.textContent = enviando ? "Enviando, espere…" : "Enviar solicitud";
+    siguiente.setAttribute("aria-busy", enviando ? "true" : "false");
+    progreso.textContent = enviando ? "Enviando su solicitud. Espere, puede tardar unos segundos." : "Paso 4 de 4";
   }
 
-  function mostrarConfirmacion(codigo, nombre, telefono, cantidadArchivos) {
+  // Clave de este envío: se crea una vez y se reutiliza si hay que reintentar tras un fallo de red.
+  // Así el servidor reconoce el reintento y no crea dos solicitudes. Al volver a los pasos anteriores se descarta.
+  let claveDeEnvio = null;
+
+  function nuevaClaveDeEnvio() {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+  }
+
+  // Envía con un tiempo máximo: si no llega respuesta a tiempo, cuenta como fallo de red
+  async function enviarSolicitud(fd) {
+    const control = new AbortController();
+    const temporizador = window.setTimeout(function () { control.abort(); }, 30000);
+    try {
+      return await fetch("/api/solicitudes", {
+        method: "POST",
+        body: fd,
+        headers: { "Idempotency-Key": claveDeEnvio },
+        signal: control.signal
+      });
+    } finally {
+      window.clearTimeout(temporizador);
+    }
+  }
+
+  async function enviar() {
+    const fd = new FormData();
+    fd.append("nombre", document.getElementById("nombre").value.trim());
+    fd.append("telefono", soloDigitos(document.getElementById("telefono").value));
+    fd.append("municipio", document.getElementById("municipio").value.trim());
+    fd.append("eps", document.getElementById("eps").value.trim());
+    fd.append("tramite", tramiteElegido);
+    fd.append("detalle", construirDetalle());
+    fd.append("consentimiento", "true");
+    archivosListos.forEach(function (item) { fd.append("adjuntos", item.archivo, item.archivo.name); });
+    if (!claveDeEnvio) claveDeEnvio = nuevaClaveDeEnvio();
+
+    errorTexto.textContent = "";
+    ponerEnvio(true);
+
+    let respuesta;
+    try {
+      respuesta = await enviarSolicitud(fd);
+    } catch (e) {
+      // No llegó respuesta: la solicitud pudo llegar o no. Volver a enviar es seguro gracias a la clave.
+      errorTexto.textContent = "No recibimos respuesta del servidor. Pulse Enviar solicitud de nuevo. Si su solicitud anterior sí llegó, no se creará otra.";
+      ponerEnvio(false);
+      return;
+    }
+    const datos = await respuesta.json().catch(function () { return {}; });
+    if (!respuesta.ok) {
+      errorTexto.textContent = (datos.errores || ["No se pudo guardar la solicitud. Intente de nuevo en un momento."]).join(" ");
+      ponerEnvio(false);
+      return;
+    }
+    claveDeEnvio = null;
+    mostrarConfirmacion(datos.codigo, archivosListos.length);
+  }
+
+  function mostrarConfirmacion(codigo, cantidadArchivos) {
     pasos.forEach(function (p) { p.classList.remove("activo"); });
     navegacion.style.display = "none";
-    document.getElementById("progreso").textContent = "Solicitud enviada";
+    progreso.textContent = "Solicitud enviada";
     barra.style.width = "100%";
+    // El código va también en el título: el lector lo anuncia al recibir el foco
+    document.getElementById("titulo-confirmacion").textContent = "¡Recibimos su solicitud! Su código es " + codigo;
     document.getElementById("codigo-mostrado").textContent = codigo;
-    const mensaje =
-      "Hola, acabo de enviar una solicitud en SansAutorization.\n" +
-      "Código: " + codigo + "\n" +
-      "Nombre: " + nombre + "\n" +
-      "Trámite: " + tramiteElegido + "\n" +
-      (cantidadArchivos ? "Adjunté " + cantidadArchivos + " archivo(s) en la página.\n" : "") +
-      "Por favor confirme que recibió mi solicitud.";
-    document.getElementById("enlace-whatsapp").href = "https://wa.me/" + NUMERO_WHATSAPP + "?text=" + encodeURIComponent(mensaje);
+    document.getElementById("estado-copia").textContent = "";
+    // El mensaje de WhatsApp lleva solo el código: nombre y datos no van en el enlace
+    const texto =
+      "Hola, acabo de enviar una solicitud en SansAutorization. Mi código es " + codigo + "." +
+      (cantidadArchivos ? " Adjunté " + cantidadArchivos + " archivo(s) en la página." : "") +
+      " Por favor confirme que recibió mi solicitud.";
+    document.getElementById("enlace-whatsapp").href = "https://wa.me/" + NUMERO_WHATSAPP + "?text=" + encodeURIComponent(texto);
     document.getElementById("confirmacion").classList.add("activo");
-    document.getElementById("confirmacion").scrollIntoView({ block: "center" });
+    const titulo = document.getElementById("titulo-confirmacion");
+    titulo.setAttribute("tabindex", "-1");
+    titulo.focus();
   }
 
-  mostrarPaso(1);
+  // ===== Copiar el código =====
+  // Usa el portapapeles si el navegador lo permite. Si no, deja el código seleccionado para copiarlo a mano.
+  function seleccionarTexto(nodo) {
+    const rango = document.createRange();
+    rango.selectNodeContents(nodo);
+    const seleccion = window.getSelection();
+    seleccion.removeAllRanges();
+    seleccion.addRange(rango);
+  }
+
+  async function copiarCodigo() {
+    const boton = document.getElementById("copiar-codigo");
+    const codigoNodo = document.getElementById("codigo-mostrado");
+    const texto = codigoNodo.textContent;
+    let copiado = false;
+    if (window.isSecureContext && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(texto);
+        copiado = true;
+      } catch (e) {
+        copiado = false;
+      }
+    }
+    if (!copiado) {
+      // Respaldo: un campo temporal que se copia con el comando del navegador
+      const area = document.createElement("textarea");
+      area.value = texto;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      try {
+        copiado = document.execCommand("copy");
+      } catch (e) {
+        copiado = false;
+      }
+      area.remove();
+    }
+    // Al quitar el campo temporal el foco se pierde: se devuelve al botón
+    boton.focus();
+    const estado = document.getElementById("estado-copia");
+    if (copiado) {
+      estado.textContent = "Código copiado. Guárdelo en un lugar seguro.";
+    } else {
+      seleccionarTexto(codigoNodo);
+      estado.textContent = "No pudimos copiarlo por usted. El código quedó seleccionado: cópielo con Ctrl+C.";
+    }
+  }
+
+  document.getElementById("copiar-codigo").addEventListener("click", copiarCodigo);
+
+  mostrarPaso(1, false);
 
   // ===== ASISTENTE VIRTUAL (reglas, sin IA) =====
   const respuestas = {
-    precio: "Los precios son:\n• Simple: $20.000 (un solo paso ante la EPS).\n• Medio: $40.000 (hay que volver a radicar o hacer seguimiento).\n• Complejo: $70.000 (hubo rechazo o hay que escribir una PQR).\nEl nivel lo confirmamos antes de cobrar.",
-    pago: "Para empezar se paga la mitad del valor, y el resto al final. Puede pagar por Nequi, Daviplata o Bancolombia al número 3202692965.",
+    precio: "El valor depende de la complejidad del trámite: un solo paso ante la EPS, varios pasos de seguimiento, o un caso con rechazo o PQR. Lo definimos al recibir su solicitud y se lo confirmamos antes de cobrar. Para saber el valor de su caso, escríbanos por WhatsApp.",
+    pago: "Para empezar se paga la mitad del valor. El resto se paga cuando la EPS apruebe su trámite o entregue el medicamento. Puede pagar por Nequi, Daviplata o Bancolombia al número 3202692965, a nombre de Santiago Cardoso Padilla. Pague solo a esa cuenta.",
     documentos: "Para empezar necesitamos:\n• Su documento de identidad.\n• El carné o certificado de afiliación a la EPS.\n• La fórmula médica vigente.\n• Si existe, el mensaje o la negativa de la EPS.",
-    como: "1. Nos escribe o llena el formulario.\n2. Le decimos el nivel y el precio.\n3. Paga la mitad para empezar.\n4. Radicamos y hacemos el seguimiento.\n5. Al final paga el resto.\nPuede ver el avance con su código en la página Ver mi caso.",
+    como: "1. Nos escribe o llena el formulario.\n2. Le decimos el nivel y el precio.\n3. Paga la mitad para empezar.\n4. Radicamos y hacemos el seguimiento.\n5. Paga el resto cuando la EPS apruebe su trámite o entregue el medicamento.\nPuede ver el avance con su código en la página Ver mi caso.",
     garantia: "No garantizamos que la EPS apruebe el trámite. Lo que garantizamos es que se haga bien y a tiempo. La decisión final la toma la EPS.",
     tiempo: "El tiempo depende de cada caso y de la respuesta de la EPS. Le avisamos en cada paso, y puede verlo con su código.",
     devolucion: "Si la EPS rechaza la solicitud por causas que no dependen de nosotros, el adelanto no se devuelve. Si no alcanzamos a radicar el trámite, se devuelve completo.",
@@ -721,18 +969,22 @@
   function elegir(op) {
     escribir(op.texto, "yo");
     if (op.accion === "solicitar") {
-      escribir("Perfecto. Le llevo al formulario.", "bot");
+      // Se cierra el asistente y el foco va al inicio del formulario (el cierre no devuelve el foco al botón)
+      motivoCierre = "solicitar";
       document.getElementById("solicitar").scrollIntoView();
-      mostrarMenu();
+      asistente.close();
       return;
     }
     if (op.accion === "whatsapp") {
       escribir("Le abro WhatsApp con el número del servicio.", "bot");
-      window.open("https://wa.me/" + NUMERO_WHATSAPP, "_blank");
+      window.open("https://wa.me/" + NUMERO_WHATSAPP, "_blank", "noopener");
       return;
     }
     escribir(respuestas[op.tema], "bot");
     mostrarMenu();
+    // Mantiene el foco en la opción que la persona eligió, aunque el menú se haya redibujado
+    const igual = Array.from(opciones.querySelectorAll("button")).find(function (b) { return b.textContent === op.texto; });
+    if (igual) igual.focus();
   }
 
   function preguntarLibre(texto) {
@@ -760,8 +1012,15 @@
     preguntarLibre(texto);
   });
 
-  abrir.addEventListener("click", function () {
-    asistente.classList.add("abierto");
+  // El asistente es un diálogo modal: mientras está abierto, el resto de la página no responde.
+  // Escape lo cierra de forma nativa, y al cerrarse el foco vuelve al botón "Asistente".
+  // Por qué se cerró el asistente: decide a qué control vuelve el foco
+  let motivoCierre = null;
+
+  function abrirAsistente() {
+    motivoCierre = null;
+    if (typeof asistente.showModal === "function") asistente.showModal();
+    else asistente.setAttribute("open", "");
     abrir.setAttribute("aria-expanded", "true");
     abrir.style.display = "none";
     if (mensajes.childElementCount === 0) {
@@ -769,14 +1028,22 @@
       mostrarMenu();
     }
     document.getElementById("pregunta").focus();
-  });
+  }
 
-  document.getElementById("cerrar-asistente").addEventListener("click", function () {
-    asistente.classList.remove("abierto");
+  abrir.addEventListener("click", abrirAsistente);
+
+  document.getElementById("cerrar-asistente").addEventListener("click", function () { asistente.close(); });
+
+  asistente.addEventListener("close", function () {
+    // Si mientras tanto el asistente volvió a abrirse, no se toca nada
+    if (asistente.open) return;
     abrir.style.display = "";
     abrir.setAttribute("aria-expanded", "false");
-    abrir.focus();
+    if (motivoCierre === "solicitar") document.getElementById("titulo-solicitud").focus();
+    else abrir.focus();
+    motivoCierre = null;
   });
+
 </script>
 
 </body>

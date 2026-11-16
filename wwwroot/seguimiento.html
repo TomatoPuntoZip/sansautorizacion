@@ -6,7 +6,7 @@
   <title>Ver mi caso | SansAutorization</title>
   <link rel="icon" href="img/logo-icono.svg" type="image/svg+xml">
   <style>
-    :root { --azul: #0b4f6c; --azul-claro: #e8f1f6; --verde: #1a7d43; --fondo: #f6f8fa; --texto: #1d2733; --gris: #4f5968; --borde: #d5dde6; --blanco: #ffffff; --error: #a4001d; }
+    :root { --azul: #0b4f6c; --azul-claro: #e8f1f6; --verde: #1a7d43; --fondo: #f6f8fa; --texto: #1d2733; --gris: #4f5968; --borde: #d5dde6; --borde-control: #6b7685; --blanco: #ffffff; --error: #a4001d; }
     * { box-sizing: border-box; }
     html { font-size: 19px; }
     body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--fondo); color: var(--texto); line-height: 1.55; }
@@ -20,7 +20,7 @@
     form { background: var(--blanco); border: 1px solid var(--borde); border-radius: 16px; padding: 22px; }
     label { display: block; font-weight: 700; margin: 14px 0 6px; }
     label:first-child { margin-top: 0; }
-    input { width: 100%; font: inherit; padding: 12px; border: 2px solid var(--borde); border-radius: 10px; }
+    input { width: 100%; font: inherit; padding: 12px; border: 2px solid var(--borde-control); border-radius: 10px; }
     .ayuda { color: var(--gris); font-size: 0.95rem; margin: 6px 0 0; }
     .boton { margin-top: 18px; background: var(--verde); color: #ffffff; border: none; border-radius: 12px; padding: 13px 20px; font: inherit; font-weight: 700; font-size: 1.1rem; cursor: pointer; }
     .boton:hover { background: #166b3a; }
@@ -34,6 +34,8 @@
     ol.linea li strong { display: block; }
     ol.linea li span { color: var(--gris); font-size: 0.95rem; }
     .pie { color: var(--gris); font-size: 0.95rem; margin-top: 14px; }
+    a { color: var(--azul); font-weight: 700; }
+    .titulo-resultado { font-size: 1.3rem; color: var(--azul); margin: 0 0 8px; }
   </style>
 </head>
 <body>
@@ -49,8 +51,8 @@
 
   <form id="formulario" novalidate>
     <label for="codigo">Código del caso</label>
-    <input type="text" id="codigo" autocomplete="off" placeholder="Ej: ABCD-1234" maxlength="12" required>
-    <p class="ayuda">Está en la confirmación que vio al enviar la solicitud.</p>
+    <input type="text" id="codigo" autocomplete="off" placeholder="Ej: ABCD-1234" maxlength="12" required aria-describedby="ayuda-codigo">
+    <p class="ayuda" id="ayuda-codigo">Está en la confirmación que vio al enviar la solicitud.</p>
 
     <label for="ultimos">Últimos 4 números de su WhatsApp</label>
     <input type="tel" id="ultimos" inputmode="numeric" autocomplete="off" placeholder="Ej: 2965" maxlength="4" required>
@@ -59,15 +61,17 @@
     <button class="boton" type="submit">Ver mi caso</button>
   </form>
 
-  <section class="resultado" id="resultado" aria-live="polite">
+  <section class="resultado" id="resultado">
+    <h2 class="titulo-resultado" id="titulo-resultado" tabindex="-1">Resultado de su caso</h2>
     <p>Trámite: <strong id="tramite"></strong></p>
     <p>Estado actual: <span class="estado" id="estado"></span></p>
     <p class="pie">Fecha de la solicitud: <span id="fecha-inicio"></span></p>
     <h2 style="font-size:1.3rem;color:var(--azul);margin:22px 0 0">Historial</h2>
-    <ol class="linea" id="historial"></ol>
+    <ol class="linea" id="historial" role="list"></ol>
+    <p class="pie">¿Tiene una pregunta sobre su caso? <a href="https://wa.me/573202692965" target="_blank" rel="noopener">Escríbanos por WhatsApp (se abre en otra ventana)</a>.</p>
   </section>
 
-  <p class="pie">¿Tiene dudas? Escríbanos por WhatsApp al 3202692965.</p>
+  <p class="pie">¿Tiene dudas? <a href="https://wa.me/573202692965" target="_blank" rel="noopener">Escríbanos por WhatsApp al 3202692965 (se abre en otra ventana)</a>.</p>
 </main>
 
 <script>
@@ -117,6 +121,8 @@
         lista.appendChild(li);
       });
       resultado.classList.add("activo");
+      // El foco va al encabezado del resultado: el lector anuncia el estado del caso
+      document.getElementById("titulo-resultado").focus();
     } catch (e) {
       error.textContent = "No pudimos conectar con el servidor. Intente de nuevo.";
     }

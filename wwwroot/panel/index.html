@@ -3,11 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
   <title>Panel de encargos | SansAutorization</title>
   <link rel="icon" href="../img/logo-icono.svg" type="image/svg+xml">
   <style>
-    :root { --azul: #0b4f6c; --verde: #1a7d43; --fondo: #f3f6f9; --texto: #1d2733; --gris: #4f5968; --borde: #d5dde6; --blanco: #ffffff; --claro: #e8f1f6; --error: #a4001d; }
+    :root { --azul: #0b4f6c; --verde: #1a7d43; --verde-oscuro: #166b3a; --fondo: #f3f6f9; --texto: #1d2733; --gris: #4f5968; --borde: #d5dde6; --borde-control: #6b7685; --blanco: #ffffff; --claro: #e8f1f6; --error: #a4001d; }
     * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
     body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--fondo); color: var(--texto); font-size: 15px; }
     a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #0a6fa0; outline-offset: 2px; }
     header { background: var(--azul); color: var(--blanco); padding: 14px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
@@ -16,34 +18,45 @@
     .resumen { display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 20px 0; }
     .chip { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 8px 12px; }
     .chip b { color: var(--azul); }
+    .conteo { color: var(--gris); font-size: 0.95rem; margin: 12px 20px 0; }
+    .carga { padding: 10px 20px 0; }
+    .boton-carga { background: var(--claro); color: var(--azul); border: 1px solid #b9d3e0; border-radius: 10px; padding: 10px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+    .boton-carga:hover { background: #d4e6f0; }
+    .boton-carga[aria-busy="true"] { cursor: progress; }
+    .instruccion { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; margin: 12px 20px 0; padding: 10px 14px; font-size: 0.95rem; }
+    .aviso-ok { color: var(--verde-oscuro); font-weight: 700; margin: 10px 20px 0; min-height: 1.2em; }
     .mensaje { margin: 16px 20px 0; padding: 12px 14px; border-radius: 10px; background: #fff8e1; border: 1px solid #b98a00; display: none; }
     .tablero { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; padding: 16px 20px 30px; align-items: start; }
     .columna { background: #e7edf3; border-radius: 12px; padding: 10px; min-height: 120px; }
     .columna h2 { font-size: 0.95rem; margin: 4px 6px 10px; color: var(--azul); display: flex; justify-content: space-between; }
     .tarjeta { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
-    .titulo { font-weight: 700; font-size: 1rem; }
+    .titulo { font-weight: 700; font-size: 1rem; margin: 0; }
     .meta { color: var(--gris); font-size: 0.9rem; margin: 2px 0 8px; }
     .detalle { font-size: 0.9rem; background: #f7f9fb; border-radius: 8px; padding: 6px 8px; margin-bottom: 8px; }
     .codigo { font-family: Consolas, monospace; color: var(--gris); font-size: 0.85rem; }
     .vacio { color: var(--gris); font-size: 0.9rem; padding: 8px; }
     .fila { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-    label { font-size: 0.8rem; color: var(--gris); display: block; margin-bottom: 2px; }
-    select, input[type="number"], input[type="text"], textarea { width: 100%; font: inherit; padding: 6px; border: 1px solid var(--borde); border-radius: 6px; background: var(--blanco); }
+    .ancho-completo { grid-column: 1 / -1; }
+    label { font-size: 0.9rem; color: var(--gris); display: block; margin-bottom: 2px; }
+    select, input[type="number"], input[type="text"], textarea { width: 100%; font: inherit; padding: 6px; border: 1px solid var(--borde-control); border-radius: 6px; background: var(--blanco); }
     textarea { min-height: 70px; }
     .checks { display: flex; gap: 12px; margin-top: 8px; font-size: 0.9rem; }
-    .checks label { display: flex; align-items: center; gap: 4px; color: var(--texto); margin: 0; }
+    .checks label { display: flex; align-items: center; gap: 6px; min-height: 28px; color: var(--texto); margin: 0; }
+    .pendiente { color: var(--gris); font-size: 0.85rem; margin: 10px 0 4px; }
+    .pendiente.con-cambios { color: var(--texto); font-weight: 700; }
+    .boton { background: var(--verde); color: var(--blanco); border: none; border-radius: 8px; padding: 9px 14px; font: inherit; font-weight: 700; cursor: pointer; margin-top: 4px; }
+    .boton[aria-disabled="true"] { background: #5b6673; cursor: default; }
     .boton-ver { margin-top: 6px; background: var(--claro); color: var(--azul); border: 1px solid #b9d3e0; border-radius: 8px; padding: 6px 12px; font: inherit; font-weight: 700; cursor: pointer; }
-    .guardando { opacity: 0.6; }
     a { color: var(--azul); }
 
-    /* ----- Detalle del caso ----- */
-    #fondo { position: fixed; inset: 0; background: rgba(15, 30, 40, 0.35); display: none; z-index: 10; }
-    #fondo.abierto { display: block; }
-    #detalle { position: fixed; top: 0; right: 0; bottom: 0; width: min(560px, 100vw); background: var(--blanco); z-index: 11; overflow-y: auto; box-shadow: -8px 0 24px rgba(0, 0, 0, 0.2); padding: 20px; display: none; }
-    #detalle.abierto { display: block; }
-    #detalle h2 { color: var(--azul); font-size: 1.2rem; margin: 30px 0 4px; }
-    #detalle h3 { font-size: 1rem; color: var(--azul); margin: 22px 0 8px; border-bottom: 1px solid var(--borde); padding-bottom: 4px; }
+    /* ----- Detalle del caso: diálogo modal (atrapa el foco y se cierra con Escape) ----- */
+    #detalle { width: min(560px, 100vw); max-width: 100vw; height: 100vh; max-height: 100vh; margin: 0 0 0 auto; padding: 0; border: 0; background: var(--blanco); color: var(--texto); box-shadow: -8px 0 24px rgba(0, 0, 0, 0.2); }
+    #detalle::backdrop { background: rgba(15, 30, 40, 0.35); }
+    .detalle-contenido { padding: 20px; min-height: 100%; }
     #cerrar-detalle { background: var(--claro); color: var(--azul); border: 1px solid #b9d3e0; border-radius: 8px; padding: 6px 12px; font: inherit; font-weight: 700; cursor: pointer; float: right; }
+    .detalle-contenido h2 { color: var(--azul); font-size: 1.2rem; margin: 30px 0 4px; }
+    .detalle-contenido h2:focus { outline: 3px solid #0a6fa0; outline-offset: 3px; }
+    .detalle-contenido h3 { font-size: 1rem; color: var(--azul); margin: 22px 0 8px; border-bottom: 1px solid var(--borde); padding-bottom: 4px; }
     .datos dt { font-weight: 700; color: var(--azul); margin-top: 6px; font-size: 0.9rem; }
     .datos dd { margin: 0 0 2px 0; }
     .linea { list-style: none; padding: 0; margin: 0; border-left: 3px solid var(--borde); }
@@ -51,9 +64,10 @@
     .linea li::before { content: ""; position: absolute; left: -8px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--verde); }
     .linea li small { color: var(--gris); display: block; }
     .bloque { background: #f7f9fb; border-radius: 10px; padding: 12px; margin-top: 8px; }
-    .boton { background: var(--verde); color: var(--blanco); border: none; border-radius: 8px; padding: 9px 14px; font: inherit; font-weight: 700; cursor: pointer; margin-top: 8px; }
-    .boton:disabled { opacity: 0.6; cursor: default; }
-    .error-detalle { color: var(--error); font-weight: 700; min-height: 1.2em; margin-top: 6px; }
+    .bloque label { margin: 8px 0 2px; }
+    .bloque label:first-child { margin-top: 0; }
+    .error-detalle { color: var(--error); font-weight: 700; min-height: 1.2em; margin: 6px 0 0; }
+    .detalle-contenido .aviso-ok { margin: 6px 0 0; }
   </style>
 </head>
 <body>
@@ -63,33 +77,83 @@
   <button type="button" id="recargar">Actualizar</button>
 </header>
 
-<div class="resumen" id="resumen"></div>
-<div class="mensaje" id="mensaje" role="alert"></div>
-<div class="tablero" id="tablero"></div>
+<main>
+  <div class="resumen" id="resumen"></div>
+  <p class="conteo" id="conteo" role="status" tabindex="-1"></p>
+  <div class="carga">
+    <button type="button" class="boton-carga" id="cargar-mas" hidden>Cargar más casos</button>
+  </div>
+  <p class="instruccion">Para cambiar un caso, elija los datos en su tarjeta y pulse <strong>Guardar cambios</strong>. Nada se guarda hasta que lo pulse.</p>
+  <p class="aviso-ok" id="aviso" role="status"></p>
+  <div class="mensaje" id="mensaje" role="alert"></div>
+  <div class="tablero" id="tablero"></div>
+</main>
 
-<div id="fondo"></div>
-<aside id="detalle" role="dialog" aria-modal="true" aria-labelledby="detalle-titulo">
-  <button type="button" id="cerrar-detalle">Cerrar</button>
-  <div id="detalle-contenido"></div>
-</aside>
+<dialog id="detalle" aria-labelledby="detalle-titulo">
+  <div class="detalle-contenido">
+    <button type="button" id="cerrar-detalle">Cerrar</button>
+    <p class="aviso-ok" id="detalle-aviso" role="status"></p>
+    <p class="error-detalle" id="detalle-error" role="alert"></p>
+    <div id="detalle-contenido"></div>
+  </div>
+</dialog>
 
 <script>
+  // ===== Configuración =====
   const ESTADOS = ["Recibido", "Documentos pendientes", "Radicado", "En espera", "Resuelto", "Rechazado"];
   const NIVELES = ["Sin definir", "Simple", "Medio", "Complejo"];
+  const TAMANO_PAGINA = 200; // igual al valor por defecto del servidor
+  const TIEMPO_MAXIMO = 15000; // ms: una petición sin respuesta se da por fallida
+  // Campos del diálogo que la gestora puede llenar sin guardar: se conservan al redibujar
+  const CAMPOS_DEL_DETALLE = ["detalle:estado", "detalle:nota", "detalle:texto-nota"];
+  // Campos de texto del diálogo: si tienen algo sin guardar, se pide confirmación antes de cerrar
+  const CAMPOS_DE_TEXTO = ["detalle:nota", "detalle:texto-nota"];
 
+  // ===== Elementos =====
   const tablero = document.getElementById("tablero");
   const resumen = document.getElementById("resumen");
+  const conteo = document.getElementById("conteo");
+  const aviso = document.getElementById("aviso");
   const mensaje = document.getElementById("mensaje");
+  const botonCargarMas = document.getElementById("cargar-mas");
   const detalle = document.getElementById("detalle");
-  const fondo = document.getElementById("fondo");
   const detalleContenido = document.getElementById("detalle-contenido");
-  let casos = [];
-  let casoAbierto = null;
+  const detalleAviso = document.getElementById("detalle-aviso");
+  const detalleError = document.getElementById("detalle-error");
+
+  // ===== Estado de la pantalla =====
+  let casos = [];            // casos cargados (resumen de la lista)
+  let total = 0;             // casos guardados en total (cabecera X-Total-Count)
+  let cargandoMas = false;
+  let casoAbierto = null;    // id del caso que está en el diálogo
+  let detalleActual = null;  // último detalle recibido del servidor
+  let accionDetalleEnCurso = false; // una nota o un cambio de estado a la vez
+  let pulsacionEnFondo = false;     // la pulsación empezó en el fondo del diálogo
+  let cola = Promise.resolve();
+  // Cambios elegidos en las tarjetas que todavía no se han guardado, por id de caso
+  const borradores = new Map();
+  // Casos con un guardado en marcha: evita enviar dos veces el mismo cambio
+  const guardandoTarjeta = new Set();
+
+  // Las lecturas y escrituras van en fila: dos acciones seguidas no se pisan
+  function encolar(tarea) {
+    const resultado = cola.then(tarea);
+    cola = resultado.catch(function () {});
+    return resultado;
+  }
 
   function mostrarError(texto) {
     mensaje.textContent = texto;
     mensaje.style.display = texto ? "block" : "none";
   }
+
+  // Vacía y vuelve a escribir la región en vivo: así el lector anuncia el mensaje aunque sea igual al anterior
+  function anunciar(region, texto) {
+    region.textContent = "";
+    window.setTimeout(function () { region.textContent = texto; }, 60);
+  }
+
+  function mostrarAviso(texto) { anunciar(aviso, texto); }
 
   function el(tag, props, hijos) {
     const nodo = document.createElement(tag);
@@ -112,232 +176,626 @@
 
   function codigoBonito(c) { return c ? c.slice(0, 4) + "-" + c.slice(4) : "—"; }
 
-  async function cargar() {
-    mostrarError("");
+  function buscarCaso(id) {
+    return casos.find(function (c) { return c.id === id; });
+  }
+
+  function reemplazarCaso(id, datos) {
+    const indice = casos.findIndex(function (c) { return c.id === id; });
+    if (indice >= 0) casos[indice] = datos;
+  }
+
+  // Convierte una respuesta de error en un texto que la gestora pueda entender
+  async function mensajeDe(r) {
+    const datos = await r.json().catch(function () { return null; });
+    if (datos && Array.isArray(datos.errores) && datos.errores.length) return datos.errores.join(" ");
+    if (r.status === 401) return "Usuario o contraseña incorrectos. Recargue la página para intentar de nuevo.";
+    if (r.status === 404) return "No encontramos ese caso. Puede que ya no exista. Pulse Actualizar.";
+    if (r.status === 429) return "Hay demasiadas acciones seguidas. Espere un rato e intente de nuevo.";
+    if (r.status === 503) return "El servidor no pudo registrar esta acción, así que no se guardó ni se mostró nada. Intente de nuevo en un momento.";
+    return "El servidor no pudo completar la acción (código " + r.status + "). Intente de nuevo.";
+  }
+
+  // Hace una petición con tiempo máximo y devuelve { ok, datos, mensaje, respuesta }.
+  // Una petición sin respuesta no bloquea la cola: se da por fallida al cabo de TIEMPO_MAXIMO.
+  async function pedir(url, opciones) {
+    const control = new AbortController();
+    const temporizador = window.setTimeout(function () { control.abort(); }, TIEMPO_MAXIMO);
+    let r;
     try {
-      const r = await fetch("/api/casos");
-      if (r.status === 401) { mostrarError("Usuario o contraseña incorrectos. Recargue la página para intentar de nuevo."); return; }
-      if (!r.ok) { mostrarError("No se pudieron cargar los casos (código " + r.status + ")."); return; }
-      casos = await r.json();
-      pintar();
-      if (casoAbierto) abrirDetalle(casoAbierto, false);
+      r = await fetch(url, Object.assign({}, opciones, { signal: control.signal }));
     } catch (e) {
-      mostrarError("No hay conexión con el servidor.");
+      const texto = e && e.name === "AbortError"
+        ? "El servidor tarda demasiado en responder. Revise su internet e intente de nuevo."
+        : "No hay conexión con el servidor. Revise su internet e intente de nuevo.";
+      return { ok: false, datos: null, mensaje: texto, respuesta: null };
+    } finally {
+      window.clearTimeout(temporizador);
+    }
+    if (!r.ok) return { ok: false, datos: null, mensaje: await mensajeDe(r), respuesta: r };
+    const datos = await r.json().catch(function () { return null; }); // un 204 no trae cuerpo
+    return { ok: true, datos: datos, mensaje: "", respuesta: r };
+  }
+
+  function pedirPagina(desplazamiento) {
+    return pedir("/api/casos?limite=" + TAMANO_PAGINA + "&desplazamiento=" + desplazamiento);
+  }
+
+  function leerTotal(respuesta) {
+    return Number(respuesta.headers.get("X-Total-Count")) || 0;
+  }
+
+  // Primera página: reinicia la lista. Los cambios elegidos y no guardados se conservan.
+  async function recargar() {
+    mostrarError("");
+    mostrarAviso("");
+    const res = await pedirPagina(0);
+    if (!res.ok) { mostrarError(res.mensaje); return; }
+    total = leerTotal(res.respuesta);
+    casos = res.datos || [];
+    pintar();
+  }
+
+  // Página siguiente. Va en fila con el resto de acciones: el desplazamiento se calcula al ejecutarse,
+  // así una recarga que ocurra antes no deja casos fuera de la lista.
+  function cargarMas() {
+    if (cargandoMas) return;
+    cargandoMas = true;
+    botonCargarMas.setAttribute("aria-busy", "true");
+    encolar(async function () {
+      mostrarError("");
+      mostrarAviso("");
+      const res = await pedirPagina(casos.length);
+      cargandoMas = false;
+      botonCargarMas.setAttribute("aria-busy", "false");
+      if (!res.ok) { mostrarError(res.mensaje); return; }
+      total = leerTotal(res.respuesta);
+      const conocidos = new Set(casos.map(function (c) { return c.id; }));
+      (res.datos || []).forEach(function (c) { if (!conocidos.has(c.id)) casos.push(c); });
+      pintar();
+      // Si ya no quedan casos, el botón desaparece: el foco pasa al resumen
+      if (casos.length >= total) conteo.focus();
+    });
+  }
+
+  // ===== Foco =====
+  // Cada control tiene una clave (data-clave). Al redibujar el tablero el nodo cambia, así que el foco
+  // se busca de nuevo por clave. Un número también conserva lo que la persona escribió sin confirmar.
+  function estadoDelFoco() {
+    const activo = document.activeElement;
+    if (!activo || !activo.dataset || !activo.dataset.clave) return null;
+    return { clave: activo.dataset.clave, valor: activo.type === "number" ? activo.value : null };
+  }
+
+  function restaurarFoco(foco, raiz) {
+    if (!foco) return;
+    const nodos = raiz.querySelectorAll("[data-clave]");
+    for (let i = 0; i < nodos.length; i++) {
+      if (nodos[i].dataset.clave === foco.clave) {
+        if (foco.valor !== null) nodos[i].value = foco.valor;
+        nodos[i].focus();
+        return;
+      }
     }
   }
 
-  // Envía cambios a un caso. Devuelve true si se guardó.
-  async function guardar(id, cambios, tarjeta) {
-    if (tarjeta) tarjeta.classList.add("guardando");
-    let ok = false;
-    try {
-      const r = await fetch("/api/casos/" + id, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cambios)
-      });
-      if (r.ok) {
-        ok = true;
-        mostrarError("");
-      } else {
-        const datos = await r.json().catch(function () { return {}; });
-        mostrarError((datos.errores || ["No se pudo guardar el cambio."]).join(" "));
-      }
-    } catch (e) {
-      mostrarError("No se pudo guardar. Revise la conexión.");
-    }
-    await cargar();
-    return ok;
+  function enfocarClave(clave, raiz) {
+    restaurarFoco({ clave: clave, valor: null }, raiz);
+  }
+
+  // ===== Tablero =====
+  function chip(etiqueta, valor) {
+    return el("div", { className: "chip" }, [document.createTextNode(etiqueta), el("b", { text: valor })]);
+  }
+
+  function pintar() {
+    const foco = estadoDelFoco();
+    const completo = casos.length >= total;
+    const porCobrar = casos
+      .filter(function (c) { return c.precio != null && !c.saldoPagado; })
+      .reduce(function (suma, c) { return suma + (c.precio - (c.adelantoPagado ? c.precio / 2 : 0)); }, 0);
+
+    resumen.innerHTML = "";
+    resumen.appendChild(chip("Casos: ", String(total)));
+    resumen.appendChild(chip(completo ? "Por cobrar: " : "Por cobrar en lo cargado: ", pesos(porCobrar)));
+    conteo.textContent = completo
+      ? (total ? "Mostrando los " + total + " casos." : "Todavía no hay casos.")
+      : "Mostrando " + casos.length + " de " + total + " casos.";
+    botonCargarMas.hidden = completo;
+
+    tablero.innerHTML = "";
+    ESTADOS.forEach(function (estado) {
+      const delEstado = casos.filter(function (c) { return c.estado === estado; });
+      const cuerpo = delEstado.length
+        ? delEstado.map(function (c) { return tarjetaDe(c); })
+        : [el("div", { className: "vacio", text: completo ? "Sin casos" : "Ninguno en lo cargado todavía" })];
+      tablero.appendChild(el("section", { className: "columna", "aria-label": estado }, [
+        el("h2", {}, [el("span", { text: estado }), el("span", { text: String(delEstado.length) })])
+      ].concat(cuerpo)));
+    });
+
+    restaurarFoco(foco, tablero);
+  }
+
+  // Valores de una tarjeta tal como están guardados en el servidor
+  function valoresOriginales(caso) {
+    return {
+      estado: caso.estado,
+      nivel: caso.nivel || "",
+      minutos: caso.minutos == null ? "" : String(caso.minutos),
+      precio: caso.precio == null ? "" : String(caso.precio),
+      adelantoPagado: !!caso.adelantoPagado,
+      saldoPagado: !!caso.saldoPagado
+    };
+  }
+
+  // Valores que muestra la tarjeta: lo que la gestora eligió y aún no guardó, o lo guardado
+  function valoresDe(caso) {
+    return borradores.get(caso.id) || valoresOriginales(caso);
+  }
+
+  // Diferencias entre lo guardado y lo elegido. Solo estas se envían al servidor.
+  function cambiosDe(caso, valores) {
+    const original = valoresOriginales(caso);
+    const cambios = {};
+    Object.keys(original).forEach(function (campo) {
+      if (valores[campo] !== original[campo]) cambios[campo] = valores[campo];
+    });
+    return cambios;
   }
 
   function tarjetaDe(caso) {
-    const estado = el("select", { "aria-label": "Estado" }, ESTADOS.map(function (s) {
-      return el("option", { value: s, text: s, selected: s === caso.estado ? "selected" : null });
-    }));
-    estado.addEventListener("change", function () { guardar(caso.id, { estado: estado.value }, tarjeta); });
+    const id = caso.id;
+    const codigo = codigoBonito(caso.codigo);
+    const valores = valoresDe(caso);
 
-    const nivel = el("select", { "aria-label": "Nivel" }, NIVELES.map(function (n) {
-      const valor = n === "Sin definir" ? "" : n;
-      return el("option", { value: valor, text: n, selected: (caso.nivel || "") === valor ? "selected" : null });
-    }));
-    nivel.addEventListener("change", function () { if (nivel.value) guardar(caso.id, { nivel: nivel.value }, tarjeta); });
+    const estado = el("select", { id: "estado-" + id, "aria-label": "Estado del caso " + codigo, "data-clave": "estado:" + id },
+      ESTADOS.map(function (s) {
+        return el("option", { value: s, text: s, selected: s === valores.estado ? "selected" : null });
+      }));
 
-    const minutos = el("input", { type: "number", min: "0", "aria-label": "Minutos", value: caso.minutos == null ? "" : String(caso.minutos), placeholder: "min" });
-    minutos.addEventListener("change", function () { if (minutos.value !== "") guardar(caso.id, { minutos: parseInt(minutos.value, 10) }, tarjeta); });
+    const nivel = el("select", { id: "nivel-" + id, "aria-label": "Nivel del caso " + codigo, "data-clave": "nivel:" + id },
+      NIVELES.map(function (n) {
+        const valor = n === "Sin definir" ? "" : n;
+        return el("option", { value: valor, text: n, selected: valores.nivel === valor ? "selected" : null });
+      }));
 
-    const adelanto = el("input", { type: "checkbox", ...(caso.adelantoPagado ? { checked: "checked" } : {}) });
-    adelanto.addEventListener("change", function () { guardar(caso.id, { adelantoPagado: adelanto.checked }, tarjeta); });
+    const minutos = el("input", {
+      type: "number", min: "0", max: "100000", step: "1", id: "minutos-" + id, placeholder: "min",
+      "aria-label": "Minutos del caso " + codigo, "data-clave": "minutos:" + id, value: valores.minutos
+    });
 
-    const saldo = el("input", { type: "checkbox", ...(caso.saldoPagado ? { checked: "checked" } : {}) });
-    saldo.addEventListener("change", function () { guardar(caso.id, { saldoPagado: saldo.checked }, tarjeta); });
+    const precio = el("input", {
+      type: "number", min: "15000", max: "10000000", step: "1000", id: "precio-" + id, placeholder: "pesos",
+      "aria-label": "Precio del caso " + codigo, "data-clave": "precio:" + id, value: valores.precio
+    });
 
-    const botonVer = el("button", { type: "button", className: "boton-ver", text: "Ver historial y notas" });
-    botonVer.addEventListener("click", function () { abrirDetalle(caso.id, true); });
+    const adelanto = el("input", { type: "checkbox", id: "adelanto-" + id, "data-clave": "adelanto:" + id, ...(valores.adelantoPagado ? { checked: "checked" } : {}) });
+    const saldo = el("input", { type: "checkbox", id: "saldo-" + id, "data-clave": "saldo:" + id, ...(valores.saldoPagado ? { checked: "checked" } : {}) });
 
-    const tarjeta = el("article", { className: "tarjeta" }, [
-      el("div", { className: "codigo", text: "Código " + codigoBonito(caso.codigo) }),
-      el("div", { className: "titulo", text: caso.nombre }),
+    const pendiente = el("p", { className: "pendiente", id: "pendiente-" + id });
+    const boton = el("button", {
+      type: "button", className: "boton", id: "guardar-" + id, "data-clave": "guardar:" + id,
+      "aria-describedby": "pendiente-" + id, text: "Guardar cambios"
+    });
+    const botonVer = el("button", {
+      type: "button", className: "boton-ver", text: "Ver historial y notas",
+      "data-clave": "ver:" + id, "aria-label": "Ver historial y notas del caso " + codigo
+    });
+
+    // Lo que hay ahora mismo en los controles de la tarjeta
+    function leerControles() {
+      return {
+        estado: estado.value,
+        nivel: nivel.value,
+        minutos: minutos.value,
+        precio: precio.value,
+        adelantoPagado: adelanto.checked,
+        saldoPagado: saldo.checked
+      };
+    }
+
+    // Muestra si hay cambios sin guardar; el botón solo se activa cuando los hay
+    function pintarPendiente(cambios) {
+      const hay = Object.keys(cambios).length > 0;
+      pendiente.textContent = hay ? "Hay cambios sin guardar." : "Sin cambios pendientes.";
+      pendiente.className = hay ? "pendiente con-cambios" : "pendiente";
+      boton.setAttribute("aria-disabled", hay && !guardandoTarjeta.has(id) ? "false" : "true");
+    }
+
+    // Recuerda lo elegido sin enviarlo: el servidor solo se llama al pulsar «Guardar cambios»
+    function alCambiar() {
+      const elegido = leerControles();
+      const cambios = cambiosDe(buscarCaso(id) || caso, elegido);
+      if (Object.keys(cambios).length) borradores.set(id, elegido);
+      else borradores.delete(id);
+      pintarPendiente(cambios);
+    }
+
+    [estado, nivel, minutos, precio, adelanto, saldo].forEach(function (control) {
+      control.addEventListener("change", alCambiar);
+    });
+    boton.addEventListener("click", function () { guardarCambios(id); });
+    botonVer.addEventListener("click", function () { abrirDetalle(id); });
+    pintarPendiente(cambiosDe(caso, valores));
+
+    const adjuntos = (caso.adjuntos || []).map(function (a) {
+      return el("a", { href: "/api/casos/" + id + "/adjuntos/" + a.id, target: "_blank", rel: "noopener", text: "Adjunto: " + a.nombre });
+    });
+
+    return el("article", { className: "tarjeta", "aria-label": "Caso " + codigo }, [
+      el("div", { className: "codigo", text: "Código " + codigo }),
+      el("h3", { className: "titulo", text: caso.nombre }),
       el("div", { className: "meta", text: caso.municipio + " · " + caso.eps + " · " + fecha(caso.creadoEn) }),
       el("div", { className: "detalle", text: caso.tramite + (caso.detalle ? ": " + caso.detalle : "") }),
-      el("div", { className: "meta" }, (caso.adjuntos || []).map(function (a) {
-        return el("a", { href: "/api/casos/" + caso.id + "/adjuntos/" + a.id, target: "_blank", rel: "noopener", text: "Adjunto: " + a.nombre });
-      })),
+      el("div", { className: "meta" }, adjuntos),
       el("div", { className: "meta" }, [
         el("a", { href: "https://wa.me/57" + caso.telefono, target: "_blank", rel: "noopener", text: "WhatsApp " + caso.telefono })
       ]),
       el("div", { className: "fila" }, [
-        el("div", {}, [el("label", { text: "Nivel" }), nivel]),
-        el("div", {}, [el("label", { text: "Minutos" }), minutos])
+        el("div", {}, [el("label", { for: "nivel-" + id, text: "Nivel" }), nivel]),
+        el("div", {}, [el("label", { for: "minutos-" + id, text: "Minutos" }), minutos])
       ]),
-      el("div", { className: "meta", text: "Precio: " + pesos(caso.precio) }),
+      el("div", { className: "fila" }, [
+        el("div", { className: "ancho-completo" }, [el("label", { for: "precio-" + id, text: "Precio (pesos)" }), precio])
+      ]),
       el("div", { className: "checks" }, [
         el("label", {}, [adelanto, document.createTextNode(" Adelanto 50%")]),
         el("label", {}, [saldo, document.createTextNode(" Saldo pagado")])
       ]),
       el("div", { className: "fila" }, [
-        el("div", { style: "grid-column: 1 / -1" }, [el("label", { text: "Estado" }), estado])
+        el("div", { className: "ancho-completo" }, [el("label", { for: "estado-" + id, text: "Estado" }), estado])
       ]),
+      pendiente,
+      boton,
       botonVer
     ]);
-    return tarjeta;
   }
 
-  function pintar() {
-    const porCobrar = casos
-      .filter(function (c) { return c.precio != null && !c.saldoPagado; })
-      .reduce(function (suma, c) { return suma + c.precio; }, 0);
-    resumen.innerHTML = "";
-    resumen.appendChild(el("div", { className: "chip" }, [document.createTextNode("Casos: "), el("b", { text: String(casos.length) })]));
-    resumen.appendChild(el("div", { className: "chip" }, [document.createTextNode("Por cobrar: "), el("b", { text: pesos(porCobrar) })]));
+  // Guarda lo elegido en una tarjeta. Solo se envían los campos que cambiaron.
+  function guardarCambios(id) {
+    if (guardandoTarjeta.has(id)) return; // ya hay un guardado en marcha para este caso
+    const caso = buscarCaso(id);
+    if (!caso) return;
+    const codigo = codigoBonito(caso.codigo);
+    limpiarInvalidos();
+    mostrarError("");
+    mostrarAviso("");
 
-    tablero.innerHTML = "";
-    ESTADOS.forEach(function (estado) {
-      const delEstado = casos.filter(function (c) { return c.estado === estado; });
-      const cuerpo = delEstado.length ? delEstado.map(tarjetaDe) : [el("div", { className: "vacio", text: "Sin casos" })];
-      tablero.appendChild(el("section", { className: "columna" }, [
-        el("h2", {}, [el("span", { text: estado }), el("span", { text: String(delEstado.length) })])
-      ].concat(cuerpo)));
+    const cambios = cambiosDe(caso, valoresDe(caso));
+    if (!Object.keys(cambios).length) {
+      mostrarAviso("No hay cambios que guardar en el caso " + codigo + ".");
+      return;
+    }
+
+    // Validación antes de enviar; si algo no sirve, se lleva el foco al control que falla
+    const envio = {};
+    if ("estado" in cambios) {
+      envio.estado = cambios.estado;
+      // El estado que la gestora vio: el servidor no pisa un cambio hecho por otra persona
+      envio.estadoEsperado = caso.estado;
+    }
+    if ("nivel" in cambios) {
+      if (!cambios.nivel) return rechazar("Elija Simple, Medio o Complejo. El nivel no puede quedar sin definir.", "nivel:" + id);
+      envio.nivel = cambios.nivel;
+    }
+    if ("minutos" in cambios) {
+      const numero = Number(cambios.minutos);
+      if (cambios.minutos === "" || !Number.isInteger(numero) || numero < 0 || numero > 100000) {
+        return rechazar("Los minutos deben ser un número entero entre 0 y 100.000.", "minutos:" + id);
+      }
+      envio.minutos = numero;
+    }
+    if ("precio" in cambios) {
+      const precioNumero = Number(cambios.precio);
+      if (cambios.precio === "" || !Number.isInteger(precioNumero) || precioNumero < 15000 || precioNumero > 10000000) {
+        return rechazar("El precio debe ser un número entero entre $15.000 y $10.000.000.", "precio:" + id);
+      }
+      envio.precio = precioNumero;
+    }
+    if ("adelantoPagado" in cambios) envio.adelantoPagado = cambios.adelantoPagado;
+    if ("saldoPagado" in cambios) envio.saldoPagado = cambios.saldoPagado;
+
+    guardandoTarjeta.add(id);
+    encolar(async function () {
+      try {
+        mostrarError("");
+        mostrarAviso("");
+        const res = await pedir("/api/casos/" + id, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(envio)
+        });
+        if (!res.ok) {
+          // Lo elegido sigue en la tarjeta para que la gestora lo corrija y vuelva a intentar
+          mostrarError(res.mensaje);
+          pintar();
+          return;
+        }
+        borradores.delete(id);
+        const lectura = await pedir("/api/casos/" + id);
+        if (lectura.ok) {
+          reemplazarCaso(id, lectura.datos);
+          pintar();
+          mostrarAviso("Cambios guardados en el caso " + codigo + ".");
+        } else {
+          // El cambio sí quedó guardado, pero no se pudo leer el caso: se muestra lo que hay hasta pulsar Actualizar
+          pintar();
+          mostrarError("Los cambios se guardaron, pero no pudimos actualizar la vista. Pulse Actualizar.");
+        }
+      } finally {
+        guardandoTarjeta.delete(id);
+      }
+    });
+    pintar(); // el botón de la tarjeta pasa a estar ocupado
+  }
+
+  // Muestra un error de validación y lleva el foco al control que falla
+  function rechazar(texto, clave) {
+    mostrarError(texto);
+    const nodo = tablero.querySelector('[data-clave="' + clave + '"]');
+    if (nodo) {
+      nodo.setAttribute("aria-invalid", "true");
+      nodo.focus();
+    }
+  }
+
+  function limpiarInvalidos() {
+    tablero.querySelectorAll("[aria-invalid]").forEach(function (nodo) { nodo.removeAttribute("aria-invalid"); });
+  }
+
+  // ===== Diálogo con el detalle del caso =====
+  // Va en fila: así el dato que se muestra incluye los cambios que estaban pendientes de guardar
+  function abrirDetalle(id) {
+    encolar(async function () {
+      mostrarError("");
+      mostrarAviso("");
+      const res = await pedir("/api/casos/" + id);
+      if (!res.ok) { mostrarError(res.mensaje); return; }
+      casoAbierto = id;
+      mostrarAvisoDetalle("");
+      mostrarErrorDetalle("");
+      pintarDetalle(res.datos);
+      if (!detalle.open) {
+        if (typeof detalle.showModal === "function") detalle.showModal();
+        else detalle.setAttribute("open", "");
+      }
+      // El foco va al título del caso y no al botón Cerrar: así el lector dice primero de qué caso se trata
+      const titulo = document.getElementById("detalle-titulo");
+      if (titulo) titulo.focus();
     });
   }
 
-  // ===== Detalle del caso =====
-  async function abrirDetalle(id, enfocar) {
-    casoAbierto = id;
-    let caso;
-    try {
-      const r = await fetch("/api/casos/" + id);
-      if (!r.ok) { mostrarError("No se encontró el caso."); return; }
-      caso = await r.json();
-    } catch (e) {
-      mostrarError("No hay conexión con el servidor.");
-      return;
-    }
-    pintarDetalle(caso);
-    detalle.classList.add("abierto");
-    fondo.classList.add("abierto");
-    if (enfocar) document.getElementById("cerrar-detalle").focus();
+  // Si hay texto escrito y sin guardar, pide confirmación antes de cerrar
+  function puedeCerrarDetalle() {
+    const hayTexto = CAMPOS_DE_TEXTO.some(function (clave) {
+      const nodo = detalleContenido.querySelector('[data-clave="' + clave + '"]');
+      return !!nodo && nodo.value.trim() !== "";
+    });
+    return !hayTexto || window.confirm("Tiene texto escrito y no guardado en este caso. ¿Cerrar y perder ese texto?");
   }
 
-  function cerrarDetalle() {
+  detalle.addEventListener("cancel", function (evento) {
+    if (!puedeCerrarDetalle()) evento.preventDefault();
+  });
+
+  // Cierra al hacer clic en el fondo, solo si la pulsación empezó allí: arrastrar la selección
+  // desde el texto hasta el fondo no cierra el diálogo
+  detalle.addEventListener("mousedown", function (evento) {
+    pulsacionEnFondo = evento.target === detalle;
+  });
+
+  detalle.addEventListener("click", function (evento) {
+    const cerrar = pulsacionEnFondo && evento.target === detalle;
+    pulsacionEnFondo = false;
+    if (cerrar && puedeCerrarDetalle()) detalle.close();
+  });
+
+  document.getElementById("cerrar-detalle").addEventListener("click", function () {
+    if (puedeCerrarDetalle()) detalle.close();
+  });
+
+  detalle.addEventListener("close", function () {
+    const id = casoAbierto;
     casoAbierto = null;
-    detalle.classList.remove("abierto");
-    fondo.classList.remove("abierto");
+    detalleActual = null;
+    mostrarAvisoDetalle("");
+    mostrarErrorDetalle("");
+    detalleContenido.innerHTML = "";
+    // Devuelve el foco al botón que abrió el caso, si todavía está en pantalla
+    if (id) enfocarClave("ver:" + id, tablero);
+  });
+
+  function capturarTextos() {
+    const datos = {};
+    CAMPOS_DEL_DETALLE.forEach(function (clave) {
+      const nodo = detalleContenido.querySelector('[data-clave="' + clave + '"]');
+      if (nodo) datos[clave] = nodo.value;
+    });
+    return datos;
   }
 
+  function restaurarTextos(datos) {
+    Object.keys(datos).forEach(function (clave) {
+      const nodo = detalleContenido.querySelector('[data-clave="' + clave + '"]');
+      if (nodo) nodo.value = datos[clave];
+    });
+  }
+
+  // Vacía un campo solo si todavía tiene el texto que se acaba de guardar
+  function limpiarTexto(clave, texto) {
+    const nodo = detalleContenido.querySelector('[data-clave="' + clave + '"]');
+    if (nodo && nodo.value.trim() === texto) nodo.value = "";
+  }
+
+  function mostrarErrorDetalle(texto) { anunciar(detalleError, texto); }
+
+  function mostrarAvisoDetalle(texto) { anunciar(detalleAviso, texto); }
+
+  // Si la gestora sigue viendo ese caso, el error va en el diálogo; si no, en el aviso general
+  function errorDeCaso(id, texto) {
+    if (casoAbierto === id) mostrarErrorDetalle(texto);
+    else mostrarError(texto);
+  }
+
+  // Mientras hay una acción en marcha, los botones del diálogo quedan ocupados
+  function ocuparBotonesDetalle(ocupado) {
+    ["detalle:guardar-estado", "detalle:guardar-nota"].forEach(function (clave) {
+      const boton = detalleContenido.querySelector('[data-clave="' + clave + '"]');
+      if (boton) boton.setAttribute("aria-disabled", ocupado ? "true" : "false");
+    });
+  }
+
+  // Dibuja el detalle. Si era el mismo caso, conserva lo escrito y el foco.
   function pintarDetalle(c) {
+    const mismoCaso = detalleActual !== null && detalleActual.id === c.id;
+    const textos = mismoCaso ? capturarTextos() : {};
+    const foco = estadoDelFoco();
+    detalleActual = c;
     detalleContenido.innerHTML = "";
 
-    detalleContenido.appendChild(el("h2", { id: "detalle-titulo", text: "Caso " + codigoBonito(c.codigo) }));
+    const adjuntos = c.adjuntos || [];
+    const historial = c.historial || [];
+    const notas = c.notas || [];
+
+    detalleContenido.appendChild(el("h2", { id: "detalle-titulo", tabindex: "-1", text: "Caso " + codigoBonito(c.codigo) }));
     detalleContenido.appendChild(el("p", { className: "meta", text: c.nombre + " · " + c.tramite + " · " + c.estado }));
 
     detalleContenido.appendChild(el("dl", { className: "datos" }, [
-      el("dt", { text: "WhatsApp" }), el("dd", { text: c.telefono }),
+      el("dt", { text: "WhatsApp" }), el("dd", {}, [el("a", { href: "https://wa.me/57" + c.telefono, target: "_blank", rel: "noopener", text: c.telefono })]),
       el("dt", { text: "Municipio" }), el("dd", { text: c.municipio }),
       el("dt", { text: "EPS" }), el("dd", { text: c.eps }),
       el("dt", { text: "Detalle" }), el("dd", { text: c.detalle || "—" }),
       el("dt", { text: "Solicitud" }), el("dd", { text: fecha(c.creadoEn) }),
-      el("dt", { text: "Nivel y precio" }), el("dd", { text: (c.nivel || "Sin definir") + " · " + pesos(c.precio) })
+      el("dt", { text: "Nivel y precio" }), el("dd", { text: (c.nivel || "Sin definir") + " · " + pesos(c.precio) }),
+      el("dt", { text: "Minutos" }), el("dd", { text: c.minutos == null ? "Sin registrar" : c.minutos + " min" })
     ]));
 
     // Archivos
     detalleContenido.appendChild(el("h3", { text: "Archivos" }));
-    if (!c.adjuntos.length) {
+    if (!adjuntos.length) {
       detalleContenido.appendChild(el("p", { className: "meta", text: "El cliente no adjuntó archivos." }));
     } else {
-      c.adjuntos.forEach(function (a) {
+      adjuntos.forEach(function (a) {
         detalleContenido.appendChild(el("p", {}, [el("a", { href: "/api/casos/" + c.id + "/adjuntos/" + a.id, target: "_blank", rel: "noopener", text: a.nombre })]));
       });
     }
 
     // Avance del trámite
     detalleContenido.appendChild(el("h3", { text: "Avance del trámite" }));
-    const historial = el("ol", { className: "linea" });
-    c.historial.forEach(function (h) {
-      historial.appendChild(el("li", {}, [
-        el("strong", { text: h.estado }),
-        el("small", { text: fecha(h.fecha) }),
-        h.nota ? el("small", { text: h.nota }) : null
-      ]));
-    });
-    detalleContenido.appendChild(historial);
+    detalleContenido.appendChild(el("ol", { className: "linea", role: "list" }, historial.map(function (h) {
+      return el("li", {}, [el("strong", { text: h.estado }), el("small", { text: fecha(h.fecha) }), h.nota ? el("small", { text: h.nota }) : null]);
+    })));
 
-    // Cambiar estado con nota para el historial
-    const selectEstado = el("select", { id: "nuevo-estado", "aria-label": "Nuevo estado" }, ESTADOS.map(function (s) {
+    // Cambiar estado, con una nota opcional para el historial
+    const selectEstado = el("select", { id: "detalle-estado", "data-clave": "detalle:estado" }, ESTADOS.map(function (s) {
       return el("option", { value: s, text: s, selected: s === c.estado ? "selected" : null });
     }));
-    const nota = el("textarea", { "aria-label": "Nota del paso", placeholder: "Qué pasó en este paso (opcional). Se guarda en el historial." });
-    const errorEstado = el("div", { className: "error-detalle", role: "alert" });
-    const botonEstado = el("button", { type: "button", className: "boton", text: "Guardar cambio de estado" });
-    botonEstado.addEventListener("click", async function () {
-      botonEstado.disabled = true;
-      const ok = await guardar(c.id, { estado: selectEstado.value, nota: nota.value.trim() || null }, null);
-      if (!ok) { errorEstado.textContent = "No se pudo guardar el cambio."; botonEstado.disabled = false; }
-    });
+    const notaPaso = el("textarea", { id: "detalle-nota", "data-clave": "detalle:nota", placeholder: "Qué pasó en este paso (opcional). Se guarda en el historial." });
+    const botonEstado = el("button", { type: "button", className: "boton", text: "Guardar cambio de estado", "data-clave": "detalle:guardar-estado" });
+    botonEstado.addEventListener("click", function () { guardarEstadoDetalle(c.id, selectEstado.value, notaPaso.value.trim()); });
     detalleContenido.appendChild(el("div", { className: "bloque" }, [
-      el("label", { text: "Cambiar estado" }), selectEstado,
-      el("label", { text: "Nota del paso", style: "margin-top:8px" }), nota,
-      botonEstado, errorEstado
+      el("label", { for: "detalle-estado", text: "Cambiar estado" }), selectEstado,
+      el("label", { for: "detalle-nota", text: "Nota del paso" }), notaPaso,
+      botonEstado
     ]));
 
     // Notas internas
     detalleContenido.appendChild(el("h3", { text: "Notas internas (solo la gestora)" }));
-    if (!c.notas.length) {
+    if (!notas.length) {
       detalleContenido.appendChild(el("p", { className: "meta", text: "Todavía no hay notas." }));
     } else {
-      const lista = el("ol", { className: "linea" });
-      c.notas.forEach(function (n) {
-        lista.appendChild(el("li", {}, [el("small", { text: fecha(n.fecha) }), document.createTextNode(n.texto)]));
-      });
-      detalleContenido.appendChild(lista);
+      detalleContenido.appendChild(el("ol", { className: "linea", role: "list" }, notas.map(function (n) {
+        return el("li", {}, [el("small", { text: fecha(n.fecha) }), document.createTextNode(n.texto)]);
+      })));
     }
-    const textoNota = el("textarea", { "aria-label": "Nueva nota", placeholder: "Escriba una nota interna" });
-    const errorNota = el("div", { className: "error-detalle", role: "alert" });
-    const botonNota = el("button", { type: "button", className: "boton", text: "Agregar nota" });
-    botonNota.addEventListener("click", async function () {
-      const texto = textoNota.value.trim();
-      if (!texto) { errorNota.textContent = "Escriba la nota antes de guardarla."; return; }
-      botonNota.disabled = true;
+    const textoNota = el("textarea", { id: "detalle-nueva-nota", "data-clave": "detalle:texto-nota", placeholder: "Escriba una nota interna" });
+    const botonNota = el("button", { type: "button", className: "boton", text: "Agregar nota", "data-clave": "detalle:guardar-nota" });
+    botonNota.addEventListener("click", function () { agregarNotaDetalle(c.id, textoNota.value.trim()); });
+    detalleContenido.appendChild(el("div", { className: "bloque" }, [
+      el("label", { for: "detalle-nueva-nota", text: "Nueva nota" }), textoNota, botonNota
+    ]));
+
+    if (mismoCaso) restaurarTextos(textos);
+    restaurarFoco(foco, detalleContenido);
+  }
+
+  // Cambio de estado (con nota opcional) desde el diálogo. Solo una acción a la vez.
+  function guardarEstadoDetalle(id, estadoNuevo, nota) {
+    if (accionDetalleEnCurso) return;
+    mostrarErrorDetalle("");
+    mostrarAvisoDetalle("");
+    // El estado que la gestora vio al abrir el caso: si otra persona lo cambió antes, el servidor lo rechaza
+    const estadoVisto = detalleActual && detalleActual.id === id ? detalleActual.estado : null;
+    if (estadoNuevo === estadoVisto && !nota) {
+      mostrarErrorDetalle("Cambie el estado o escriba una nota del paso para guardar.");
+      return;
+    }
+    accionDetalleEnCurso = true;
+    ocuparBotonesDetalle(true);
+    encolar(async function () {
       try {
-        const r = await fetch("/api/casos/" + c.id + "/notas", {
+        const cambios = { estado: estadoNuevo, estadoEsperado: estadoVisto };
+        if (nota) cambios.nota = nota;
+        const res = await pedir("/api/casos/" + id, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cambios)
+        });
+        if (!res.ok) { errorDeCaso(id, res.mensaje); return; }
+        limpiarTexto("detalle:nota", nota);
+        await actualizarDetalle(id, "Cambio guardado. El caso está ahora en: " + estadoNuevo + ".");
+      } finally {
+        accionDetalleEnCurso = false;
+        ocuparBotonesDetalle(false);
+      }
+    });
+  }
+
+  // Nota interna nueva. Solo una acción a la vez.
+  function agregarNotaDetalle(id, texto) {
+    if (accionDetalleEnCurso) return;
+    mostrarErrorDetalle("");
+    mostrarAvisoDetalle("");
+    if (!texto) { mostrarErrorDetalle("Escriba la nota antes de guardarla."); return; }
+    accionDetalleEnCurso = true;
+    ocuparBotonesDetalle(true);
+    encolar(async function () {
+      try {
+        const res = await pedir("/api/casos/" + id + "/notas", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ texto: texto })
         });
-        if (!r.ok) { errorNota.textContent = "No se pudo guardar la nota."; botonNota.disabled = false; return; }
-        await cargar();
-      } catch (e) {
-        errorNota.textContent = "No hay conexión con el servidor.";
-        botonNota.disabled = false;
+        if (!res.ok) { errorDeCaso(id, res.mensaje); return; }
+        limpiarTexto("detalle:texto-nota", texto);
+        await actualizarDetalle(id, "Nota guardada.");
+      } finally {
+        accionDetalleEnCurso = false;
+        ocuparBotonesDetalle(false);
       }
     });
-    detalleContenido.appendChild(el("div", { className: "bloque" }, [textoNota, botonNota, errorNota]));
   }
 
-  document.getElementById("cerrar-detalle").addEventListener("click", cerrarDetalle);
-  fondo.addEventListener("click", cerrarDetalle);
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") cerrarDetalle(); });
-  document.getElementById("recargar").addEventListener("click", cargar);
-  cargar();
+  // Vuelve a pedir el caso después de un cambio: actualiza su tarjeta y, si sigue abierto, el diálogo
+  async function actualizarDetalle(id, textoAviso) {
+    const lectura = await pedir("/api/casos/" + id);
+    if (!lectura.ok) {
+      errorDeCaso(id, "El cambio se guardó, pero no pudimos actualizar el caso. Cierre la ventana y vuelva a abrirla.");
+      return;
+    }
+    reemplazarCaso(id, lectura.datos);
+    pintar();
+    if (casoAbierto === id) {
+      pintarDetalle(lectura.datos);
+      mostrarAvisoDetalle(textoAviso);
+    }
+  }
+
+
+  document.getElementById("recargar").addEventListener("click", function () { encolar(recargar); });
+  botonCargarMas.addEventListener("click", cargarMas);
+  encolar(recargar);
 </script>
 
 </body>
