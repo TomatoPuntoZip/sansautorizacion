@@ -3,9 +3,9 @@
 Página y API para gestionar trámites ante la EPS (autorizaciones y reclamaciones de medicamentos) en Neiva, Huila.
 
 ## Qué incluye
-- **Página pública (`/`):** precios, formulario por pasos para solicitar el trámite, asistente de preguntas frecuentes y adjuntos (fórmulas, autorizaciones o negativas de la EPS). Las fotos se vuelven a guardar en el navegador: así se quitan los datos ocultos, como la ubicación del celular, y se reduce su tamaño.
+- **Página pública (`/`):** formulario por pasos para solicitar el trámite, asistente de preguntas frecuentes y adjuntos (fórmulas, autorizaciones o negativas de la EPS). Las fotos se vuelven a guardar en el navegador: así se quitan los datos ocultos, como la ubicación del celular, y se reduce su tamaño.
 - **Ver mi caso (`/seguimiento.html`):** el cliente consulta el avance con su código y los últimos 4 dígitos de su WhatsApp.
-- **Panel de encargos (`/panel/`):** acceso con usuario y contraseña. Permite ver los casos por estado, cambiar el nivel, los minutos y los pagos, ver el historial de cada caso, agregar notas internas y abrir los archivos. La lista trae 200 casos a la vez; con «Cargar más casos» se piden los siguientes. Los cambios de una tarjeta se guardan solo al pulsar «Guardar cambios»; el estado se protege si otra persona lo cambió antes.
+- **Panel de encargos (`/panel/`):** acceso con usuario y contraseña. Permite ver los casos por estado, cambiar el nivel, el precio de cada caso (mínimo $15.000), los minutos y los pagos, ver el historial de cada caso, agregar notas internas y abrir los archivos. La lista trae 200 casos a la vez; con «Cargar más casos» se piden los siguientes. Los cambios de una tarjeta se guardan solo al pulsar «Guardar cambios»; el estado se protege si otra persona lo cambió antes.
 - **Cómo tratamos sus datos (`/privacidad.html`):** política de tratamiento de datos en lenguaje sencillo.
 
 ## Requisitos

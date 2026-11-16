@@ -72,24 +72,7 @@
     .tarjeta p { margin: 0; color: var(--gris); font-size: 1rem; }
 
     section { padding: 40px 0 8px; }
-    .niveles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
-    .nivel { background: var(--blanco); border: 2px solid var(--borde); border-radius: 16px; padding: 20px; }
-    .nivel .nombre { font-weight: 800; font-size: 1.15rem; }
-    .nivel .precio { font-size: 1.9rem; font-weight: 800; color: var(--verde-oscuro); margin: 4px 0 8px; }
-    .nivel p { margin: 0; color: var(--gris); }
     .nota { color: var(--gris); font-size: 1rem; }
-    .tabla-precios { margin-top: 18px; background: var(--blanco); border: 1px solid var(--borde); border-radius: 14px; overflow-x: auto; }
-    .tabla-precios table { width: 100%; border-collapse: collapse; }
-    .tabla-precios caption { caption-side: top; text-align: left; padding: 14px 16px 10px; font-weight: 800; font-size: 1.1rem; color: var(--azul); }
-    .tabla-precios th, .tabla-precios td { padding: 12px 10px; text-align: left; vertical-align: top; border-top: 1px solid var(--borde); }
-    .tabla-precios thead th { background: var(--azul-claro); color: var(--azul); font-weight: 700; font-size: 0.95rem; border-top: 0; }
-    .tabla-precios tbody th { font-weight: 800; color: var(--texto); }
-    .tabla-precios td { font-weight: 800; color: var(--verde-oscuro); white-space: nowrap; }
-    @media (max-width: 600px) { .tabla-precios th, .tabla-precios td { padding: 10px 6px; } }
-    @media (max-width: 360px) {
-      .tabla-precios th, .tabla-precios td { padding: 8px 4px; font-size: 0.9rem; }
-      .tabla-precios td { white-space: normal; }
-    }
 
     /* ----- Formulario por pasos ----- */
     .asistente-formulario { background: var(--blanco); border: 1px solid var(--borde); border-radius: 16px; padding: 22px; }
@@ -195,7 +178,6 @@
       <img class="logo" src="img/logo.svg" alt="SansAutorization" width="220" height="32">
       <nav class="menu" aria-label="Principal">
         <a href="seguimiento.html">Ver mi caso</a>
-        <a href="#precios">Precios</a>
       </nav>
     </div>
     <p class="lema">Gestionamos sus trámites ante la EPS en Neiva</p>
@@ -204,7 +186,6 @@
       <p>Autorizaciones y reclamaciones de medicamentos, para que usted no tenga que perder días enteros. Atendemos en Neiva, Huila.</p>
       <div class="botones">
         <a class="btn" href="#solicitar">Solicitar mi trámite</a>
-        <a class="btn btn-claro" href="#precios">Ver precios</a>
       </div>
     </div>
   </div>
@@ -238,42 +219,6 @@
   </div>
 
   <div class="contenedor">
-    <section id="precios" aria-labelledby="titulo-precios">
-      <h2 id="titulo-precios">Precios</h2>
-      <p class="subtitulo">El nivel lo definimos al recibir su solicitud, y se lo confirmamos antes de cobrar.</p>
-      <div class="niveles">
-        <div class="nivel">
-          <div class="nombre">Simple</div>
-          <div class="precio">$20.000</div>
-          <p>Un solo paso ante la EPS, sin rechazo previo.</p>
-        </div>
-        <div class="nivel">
-          <div class="nombre">Medio</div>
-          <div class="precio">$40.000</div>
-          <p>Hay que volver a radicar, corregir documentos o hacer seguimiento de varios días.</p>
-        </div>
-        <div class="nivel">
-          <div class="nombre">Complejo</div>
-          <div class="precio">$70.000</div>
-          <p>Hubo rechazo, hay que escribir una PQR o escalar el caso.</p>
-        </div>
-      </div>
-      <div class="tabla-precios">
-        <table>
-          <caption>Cómo se divide el pago en cada nivel</caption>
-          <thead>
-            <tr><th scope="col">Nivel</th><th scope="col">Pague al empezar</th><th scope="col">Pague al final</th><th scope="col">Total</th></tr>
-          </thead>
-          <tbody>
-            <tr><th scope="row">Simple</th><td>$10.000</td><td>$10.000</td><td>$20.000</td></tr>
-            <tr><th scope="row">Medio</th><td>$20.000</td><td>$20.000</td><td>$40.000</td></tr>
-            <tr><th scope="row">Complejo</th><td>$35.000</td><td>$35.000</td><td>$70.000</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="nota">El nivel lo define nuestro equipo y se lo confirmamos antes de cobrarle. Usted paga la mitad al empezar y la otra mitad cuando la EPS apruebe su trámite o entregue el medicamento. Si el nivel cambia, le avisamos el nuevo valor antes de cobrar. Si quiere saber más, pregúntele al asistente o escríbanos por WhatsApp.</p>
-    </section>
-
     <section id="solicitar" aria-labelledby="titulo-solicitud">
       <h2 id="titulo-solicitud" tabindex="-1">Solicitar mi trámite</h2>
       <p class="subtitulo">Son cuatro pasos. Puede volver atrás en cualquier momento.</p>
@@ -960,7 +905,7 @@
 
   // ===== ASISTENTE VIRTUAL (reglas, sin IA) =====
   const respuestas = {
-    precio: "Los precios son:\n• Simple: $20.000 (un solo paso ante la EPS).\n• Medio: $40.000 (hay que volver a radicar o hacer seguimiento).\n• Complejo: $70.000 (hubo rechazo o hay que escribir una PQR).\nEl nivel lo confirmamos antes de cobrar.",
+    precio: "El valor depende de la complejidad del trámite: un solo paso ante la EPS, varios pasos de seguimiento, o un caso con rechazo o PQR. Lo definimos al recibir su solicitud y se lo confirmamos antes de cobrar. Para saber el valor de su caso, escríbanos por WhatsApp.",
     pago: "Para empezar se paga la mitad del valor. El resto se paga cuando la EPS apruebe su trámite o entregue el medicamento. Puede pagar por Nequi, Daviplata o Bancolombia al número 3202692965, a nombre de Santiago Cardoso Padilla. Pague solo a esa cuenta.",
     documentos: "Para empezar necesitamos:\n• Su documento de identidad.\n• El carné o certificado de afiliación a la EPS.\n• La fórmula médica vigente.\n• Si existe, el mensaje o la negativa de la EPS.",
     como: "1. Nos escribe o llena el formulario.\n2. Le decimos el nivel y el precio.\n3. Paga la mitad para empezar.\n4. Radicamos y hacemos el seguimiento.\n5. Paga el resto cuando la EPS apruebe su trámite o entregue el medicamento.\nPuede ver el avance con su código en la página Ver mi caso.",

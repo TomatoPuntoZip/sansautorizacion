@@ -50,13 +50,6 @@ const int MaxConsultasSeguimientoCodigo = 50;     // consultas sobre un mismo c�
 // Estados válidos de un caso (en orden de avance)
 var estadosValidos = new[] { "Recibido", "Documentos pendientes", "Radicado", "En espera", "Resuelto", "Rechazado" };
 
-// Precio de cada nivel: el servidor lo fija para que nadie lo cambie desde el navegador
-var preciosPorNivel = new Dictionary<string, int>
-{
-    ["Simple"] = 20000,
-    ["Medio"] = 40000,
-    ["Complejo"] = 70000,
-};
 
 var app = builder.Build();
 
@@ -124,6 +117,7 @@ await using (var conn = new NpgsqlConnection(connectionString))
         """, conn);
     await cmd.ExecuteNonQueryAsync();
 }
+
 
 // Retención de la auditoría: se purga al arrancar y cada 24 horas
 await Auditoria.PurgarAntiguos(connectionString, diasRetencionAuditoria);
@@ -480,7 +474,8 @@ app.MapPatch("/api/casos/{id:guid}", async (Guid id, ActualizarCasoDto dto, Http
 {
     var errores = new List<string>();
     if (dto.Estado is not null && !estadosValidos.Contains(dto.Estado)) errores.Add("Estado no válido.");
-    if (dto.Nivel is not null && !preciosPorNivel.ContainsKey(dto.Nivel)) errores.Add("Nivel no válido.");
+    if (dto.Nivel is not null && dto.Nivel is not ("Simple" or "Medio" or "Complejo")) errores.Add("Nivel no válido.");
+    if (dto.Precio is not null && dto.Precio is < 15000 or > 10000000) errores.Add("El precio debe estar entre $15.000 y $10.000.000.");
     if (dto.Minutos is < 0 or > 100000) errores.Add("Los minutos deben estar entre 0 y 100.000.");
     if (dto.Nota is not null && dto.Nota.Length > 1000) errores.Add("La nota es demasiado larga.");
     if (errores.Count > 0) return Results.BadRequest(new { errores });
@@ -489,14 +484,8 @@ app.MapPatch("/api/casos/{id:guid}", async (Guid id, ActualizarCasoDto dto, Http
     var camposCambiados = new List<string>();
     await using var cmd = new NpgsqlCommand();
     if (dto.Estado is not null) { cambios.Add("estado = @estado"); cmd.Parameters.AddWithValue("estado", dto.Estado); camposCambiados.Add("estado"); }
-    if (dto.Nivel is not null)
-    {
-        cambios.Add("nivel = @nivel");
-        cambios.Add("precio = @precio");
-        cmd.Parameters.AddWithValue("nivel", dto.Nivel);
-        cmd.Parameters.AddWithValue("precio", preciosPorNivel[dto.Nivel]);
-        camposCambiados.Add("nivel");
-    }
+    if (dto.Nivel is not null) { cambios.Add("nivel = @nivel"); cmd.Parameters.AddWithValue("nivel", dto.Nivel); camposCambiados.Add("nivel"); }
+    if (dto.Precio is not null) { cambios.Add("precio = @precio"); cmd.Parameters.AddWithValue("precio", dto.Precio.Value); camposCambiados.Add("precio"); }
     if (dto.Minutos is not null) { cambios.Add("minutos = @minutos"); cmd.Parameters.AddWithValue("minutos", dto.Minutos.Value); camposCambiados.Add("minutos"); }
     if (dto.AdelantoPagado is not null) { cambios.Add("adelanto_pagado = @adelanto"); cmd.Parameters.AddWithValue("adelanto", dto.AdelantoPagado.Value); camposCambiados.Add("adelanto"); }
     if (dto.SaldoPagado is not null) { cambios.Add("saldo_pagado = @saldo"); cmd.Parameters.AddWithValue("saldo", dto.SaldoPagado.Value); camposCambiados.Add("saldo"); }
@@ -773,6 +762,7 @@ public record ActualizarCasoDto(
     string? Estado,
     string? Nivel,
     int? Minutos,
+    int? Precio,
     bool? AdelantoPagado,
     bool? SaldoPagado,
     string? Nota,
